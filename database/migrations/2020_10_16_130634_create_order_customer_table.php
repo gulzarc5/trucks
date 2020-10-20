@@ -21,7 +21,7 @@ class CreateOrderCustomerTable extends Migration
             $table->string('source');
             $table->string('destination');
             $table->integer('weight');
-            $table->integer('No of Trucks');
+            $table->integer('no_of_trucks');
             $table->date('schedule_date');
             $table->char('bid_status')->comment('1=Open,2=Ended');
             $table->string('truck_id_assigned');

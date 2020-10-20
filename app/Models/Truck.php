@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Wallet extends Model
+class Truck extends Model
 {
-    protected $table = "wallet";
+    protected $table = "trucks";
     protected $primaryKey = "id";
 
     protected $fillable = [
-        'user_id', 'amount'
+        'truck_type', 'weight_id','owner_id','driver_id','source','image', 'status'
     ];
 }
