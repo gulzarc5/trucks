@@ -49,9 +49,15 @@ return [
             'provider' => 'user',
         ],
 
-        'api' => [
+        'userApi' => [
             'driver' => 'token',
-            'provider' => 'users',
+            'provider' => 'user',
+            'hash' => false,
+        ],
+
+        'customerApi' => [
+            'driver' => 'token',
+            'provider' => 'customer',
             'hash' => false,
         ],
     ],
@@ -85,6 +91,10 @@ return [
         'user' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'customer' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Customer::class,
         ],
 
         // 'users' => [

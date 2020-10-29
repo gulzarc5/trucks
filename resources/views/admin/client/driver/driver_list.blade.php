@@ -20,60 +20,10 @@
                                <th>Sl No.</th>
                               <th>Name</th>
                               <th>Mobile</th>
-                              <th>User Type</th>
-                              <th>Driving</th>
-                              <th>Image</th>
-                              <th>Email</th>
-                              <th>Address</th>
-                              <th>PIN</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
                           </thead>
-                          {{-- <tbody>  
-                            @if (isset($drivers) && !empty($drivers))
-                            @php
-                              $count=1;
-                            @endphp
-                                @foreach ($drivers as $item)
-                                    <tr>
-                                      <td>{{ $count++ }}</td>
-                                      <td>{{ $item->name }}</td>
-                                      <td>{{ $item->mobile }}</td>
-                                      <td>{{ $item->email }}</td>
-                                      @if($item->driving == 1)
-                                        <td>By Owner</td>
-                                      @else
-                                        <td>By Driver</td>
-                                      @endif
-                                      <td>{{ $item->state }}</td>
-                                      <td>{{ $item->city }}</td>
-                                      @if(!empty($item->image))
-                                        <td><img src="{{  asset('images/owner/'.$item->image ).''}}"/> </td>
-                                      @endif
-                                      <td>{{ $item->address }}</td>
-                                      <td>{{ $item->pin }}</td>
-                                      @if ($item->status == '1')
-                                        <td class="btn btn-sm btn-primary">Enabled</td>
-                                      @else
-                                        <td class="btn btn-sm btn-danger">Disabled</td>
-                                      @endif
-                                      <td>
-                                        <a href="{{ route('admin.edit_driver_form',['id'=>$item->id]) }}" class="btn btn-sm btn-warning">Edit</a>
-                                        @if ($item->status == '1')
-                                          <a href="{{ route('admin.owner_status',['id'=>encrypt($item->id),'status'=>2]) }}" class="btn btn-sm btn-danger">Disable</a>
-                                        @else
-                                          <a href="{{ route('admin.owner_status',['id'=>encrypt($item->id),'status'=>2]) }}" class="btn btn-sm btn-primary">Enable</a>
-                                        @endif
-                                      </td>
-                                    </tr>
-                                @endforeach
-                            @else
-                              <tr>
-                                <td colspan="4" style="text-align: center">No Category Found</td>
-                              </tr>  
-                            @endif                   
-                          </tbody> --}}
                           <tbody>
                           </tbody>
                         </table>
@@ -88,7 +38,7 @@
  @endsection
 
 @section('script')
-     
+
      <script type="text/javascript">
          $(function () {
             var table = $('#driver').DataTable();
@@ -101,23 +51,17 @@
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'name', name: 'name',searchable: true},
                     {data: 'mobile', name: 'mobile' ,searchable: true},
-                    {data: 'user_type', name: 'user_type' ,searchable: true},
-                    {data: 'driving_status', name: 'driving_status' ,searchable: true},
-                    {data: 'image', name: 'image' ,searchable: true},
-                    {data: 'email', name: 'email',searchable: true},
-                    {data: 'address', name: 'address' ,searchable: true}, 
-                    {data: 'pin', name: 'pin' ,searchable: true},
                     {data: 'status', name: 'status', render:function(data, type, row){
                     if (row.status == '1') {
                         return "<button class='btn btn-info'>Enable</a>"
                     }else{
                         return "<button class='btn btn-danger'>Disabled</a>"
-                    }                        
-                    }},                  
+                    }
+                    }},
                     {data: 'action', name: 'action', orderable: false, searchable: false},
                 ]
-            
+
         });
     </script>
-    
+
  @endsection

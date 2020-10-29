@@ -22,9 +22,9 @@
                 </div>
     	        <div>
     	            <div class="x_content">
-    	           
+
     	            	{{ Form::open(['method' => 'post','route'=>array('admin.update_customer','id'=>$customer->id) , 'enctype'=>'multipart/form-data']) }}
-    	            	
+
                         <div class="well" style="overflow: auto">
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
                                 <label for="name">Customer Name<span><b style="color: red"> * </b></span></label>
@@ -57,7 +57,14 @@
                         <div class="well" style="overflow: auto">
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
                                 <label for="state">State<span><b style="color: red"> * </b></span></label>
-                                <input type="state"class="form-control" name="state"  value="{{ $customer->state }}" >
+                                <select name="state" class="form-control" onchange="cityFetch(this.value)">
+                                    <option value="">Please select State</option>
+                                    @if (isset($state) && !empty($state))
+                                        @foreach ($state as $item)
+                                            <option value="{{$item->id}}" {{$item->id == $customer->state ? 'selected' : ''}}>{{$item->name}}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
                                 @if($errors->has('state'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
                                         <strong>{{ $errors->first('state') }}</strong>
@@ -66,7 +73,14 @@
                             </div>
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
                                 <label for="city">City<span><b style="color: red"> * </b></span></label>
-                                <input type="city"class="form-control" name="city"  value="{{ $customer->city }}" >
+                                <select name="city" class="form-control" id="city" >
+                                    <option value="">Please select State</option>
+                                    @if (isset($city) && !empty($city))
+                                        @foreach ($city as $item)
+                                            <option value="{{$item->id}}" {{$item->id == $customer->city ? 'selected' : ''}}>{{$item->name}}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
                                 @if($errors->has('city'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
                                         <strong>{{ $errors->first('city') }}</strong>
@@ -92,8 +106,8 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="form-group">    	            	
-                        {{ Form::submit('Save', array('class'=>'btn btn-success')) }}  
+                        <div class="form-group">
+                        {{ Form::submit('Save', array('class'=>'btn btn-success')) }}
     	            	</div>
     	            	{{ Form::close() }}
 
@@ -105,11 +119,35 @@
     </div>
 </div>
 
+@endsection
 
- @endsection
+@section('script')
+    <script>
+        function cityFetch(state_id) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type:"GET",
+                url:"{{ url('/admin/city/fetch/by/state/')}}"+"/"+state_id+"",
+                success:function(data){
+                    if ($.isEmptyObject(data)) {
+                        $("#city").html("<option value=''>No City Found</option>");
+                    }else {
+                        $("#city").html("<option value=''>Please Select City</option>");
+                        $.map( data, function( val, i ) {
+                            $("#city").append("<option value='"+i+"'>"+val+"</option>");
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+@endsection
 
 
 
 
-        
-    
+

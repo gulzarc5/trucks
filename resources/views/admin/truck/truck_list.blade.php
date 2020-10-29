@@ -18,18 +18,17 @@
                           <thead>
                             <tr>
                               <th>Sl</th>
-                              <th>Truck Type</th>
-                              <th>Weight</th>
+                              <th>SourceCity</th>
                               <th>Owner</th>
                               <th>Driver</th>
-                              <th>Source</th>
-                              <th>Image</th>
+                              <th>Truck no.</th>
+                              <th>Truck capacity</th>
                               <th>Status</th>
                               <th>Action</th>
                             </tr>
                           </thead>
-                          <tbody>  
-                            
+                          <tbody>
+
                           </tbody>
                         </table>
     	            </div>
@@ -43,31 +42,28 @@
  @endsection
 
  @section('script')
-     
- <script type="text/javascript">
-     
-    $(function () {
 
+ <script type="text/javascript">
+
+    $(function () {
         var table = $('#truck_list').DataTable({
             processing: true,
             serverSide: true,
             ajax: "{{ route('admin.truck_list_ajax') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                {data: 'truck_type', name: 'truck_type',searchable: true},
-                {data: 'weight_id', name: 'weight_id' ,searchable: true},
-                {data: 'owner_id', name: 'owner_id' ,searchable: true},
-                {data: 'driver_id', name: 'driver_id' ,searchable: true},
-                {data: 'source', name: 'source' ,searchable: true},
-               
-                {data: 'image', name: 'image' ,searchable: true},
+                {data: 'source_city', name: 'source_city',searchable: true},
+                {data: 'owner', name: 'owner' ,searchable: true},
+                {data: 'driver', name: 'driver' ,searchable: true},
+                {data: 'truck_number', name: 'truck_number' ,searchable: true},
+                {data: 'capacity', name: 'capacity' ,searchable: true},
                 {data: 'status', name: 'status', render:function(data, type, row){
-                if (row.status == '1') {
-                    return "<button class='btn btn-info'>Enable</a>"
-                }else{
-                    return "<button class='btn btn-danger'>Disabled</a>"
-                }                        
-                }},                  
+                    if (row.status == '1') {
+                        return "<button class='btn btn-info'>Enable</a>"
+                    }else{
+                        return "<button class='btn btn-danger'>Disabled</a>"
+                    }
+                }},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

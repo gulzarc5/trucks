@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Meat Ration</title>
+    <title>Transport</title>
     <link rel="icon" href="{{ asset('/logo/favicon.png')}}" type="image/icon type">
 
     <!-- Bootstrap -->
@@ -27,7 +27,7 @@
     <div>
       <a class="hiddenanchor" id="signup"></a>
       <a class="hiddenanchor" id="signin"></a>
-      
+
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
@@ -59,7 +59,7 @@
               </div>
               <div>
                 {{ Form::password('password',array('class' => 'form-control','placeholder'=>'Enter Passssword')) }}
-                
+
                 @error('password')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -79,7 +79,7 @@
                 <br />
 
                 <div>
-                  <h1>Meat Ration
+                  <h1>Transport
                     {{-- <img src="{{ asset('logo/logo.png')}}" height="80"> --}}
                   </h1>
                   <p>©2016 All Rights Reserved. </p>

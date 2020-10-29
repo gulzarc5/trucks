@@ -57,7 +57,7 @@
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
               <a href="{{route('admin.deshboard')}}" class="site_title">
-               
+
                 Trucks
                 {{-- <img src="{{ asset('logo/logo.png')}}" height="50" style=" width: 90%;"> --}}
               </a>
@@ -90,13 +90,15 @@
                     <ul class="nav child_menu">
                       <li class="sub_menu"><a href="{{ route('admin.state_list') }}">State  List</a></li>
                       <li class="sub_menu"><a href="{{ route('admin.city_list') }}">City List</a></li>
-                     
+                      <li class="sub_menu"><a href="{{ route('admin.truck_type_list') }}">Truck Type List</a></li>
+                      <li class="sub_menu"><a href="{{ route('admin.truck_capacity_list') }}">Truck Capacity List</a></li>
+
                     </ul>
                   </li>
 
                   <li><a href="{{route('admin.customer_list')}}"><i class="fa fa-user"></i> Customer List</a>
                   </li>
-                    
+
                   <li><a><i class="fa fa-gear" aria-hidden="true"></i> Client List <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li class="sub_menu"><a href="{{ route('admin.owner_list') }}">Owner  List</a></li>

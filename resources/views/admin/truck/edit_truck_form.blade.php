@@ -1,6 +1,8 @@
 @extends('admin.template.admin_master')
 
 @section('content')
+<link rel="stylesheet" href="{{asset('admin/jquery-confirm-v3.3.4/dist/jquery-confirm.min.css')}}">
+
 <div class="right_col" role="main">
     <div class="row">
     	{{-- <div class="col-md-2"></div> --}}
@@ -8,7 +10,7 @@
     	    <div class="x_panel">
 
     	        <div class="x_title">
-    	            <h2>Update Truck</h2>
+    	            <h2>Edit Truck</h2>
     	            <div class="clearfix"></div>
     	        </div>
                 <div>
@@ -22,131 +24,117 @@
                 </div>
     	        <div>
     	            <div class="x_content">
-    	                {{ Form::open(['method' => 'post','route'=>array('admin.update_truck','id'=>$truck->id) , 'enctype'=>'multipart/form-data']) }}
-    	            	<div class="well" style="overflow: auto">
-                            <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
-                                <label for="truck">Truck Type<span><b style="color: red"> * </b></span></label>
-                                <select  class="form-control" name="truck">
-                                    
-                                    @if($truck->truck_type ==1)
-                                        <option value="1" selected name="truck">Container</option>
-                                        <option value="2"  name="truck">Truck 20MT/12 wheel</option>
-                                    @else
-                                    <option value="1"  name="truck">Container</option>
-                                        <option value="2"  selected name="truck">Truck 20MT/12 wheel</option>
-                                    @endif
-                                    
-                                    
-                                </select>
+                        {{ Form::open(['method' => 'post','route'=>'admin.add_truck']) }}
+                        <div class="well" style="overflow: auto">
+                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
+                                <label for="owner_mobile">Owner Mobile<span><b style="color: red"> * </b></span> <span id="owner_verify_error"></span></label>
+                                <input type="text" class="form-control" name="owner_mobile" id="owner_mobile" placeholder="Enter Owner Mobile" onblur="checkOwner(this.value)" value="{{$truck->owner_mobile}}"/>
+
                                 @if($errors->has('truck'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
                                         <strong>{{ $errors->first('truck') }}</strong>
                                     </span>
                                 @enderror
                             </div>
-                            <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
-                                <label for="owner_name">Owner Name<span><b style="color: red"> * </b></span></label>
-                                
-                                <select  class="form-control" name="owner_name">
-                                
-                                @foreach($owner as $names)
-                                   @if($names->status ==1 && $names->id == $truck->owner_id)
-                                        <option value="{{ $names->id}} " selected name="owner_name">{{ $names->name }}</option>
-                                    @else
-                                        <option value="{{ $value->id }}"  name="owner_name">{{ $names->name }}</option>
-                                    @endif
-                                @endforeach
-                                   
-                                   
-                                </select>
-                                @if($errors->has('owner_name'))
+                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
+                                <label for="owner_mobile">Owner Name<span><b style="color: red"> * </b></span></label>
+                                <input type="text" class="form-control"  id="owner_name" value="{{$truck->owner_name}}" disabled/>
+                            </div>
+
+                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
+                                <label for="driver_mobile">Driver Mobile
+                                    <span><b style="color: red"> * </b></span>
+                                    <span id="driver_mobile_error"></span>
+                                </label>
+                                <input type="text" class="form-control" name="driver_mobile" placeholder="Enter Driver Mobile" onblur="checkDriver(this.value)" id="driver_mobile"  value="{{$truck->driver_mobile}}"/>
+
+                                @if($errors->has('truck'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
-                                        <strong>{{ $errors->first('owner_name') }}</strong>
+                                        <strong>{{ $errors->first('truck') }}</strong>
                                     </span>
                                 @enderror
                             </div>
-                            <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
-                                <label for="driver_name">Driver Name<span><b style="color: red"> * </b></span></label>
-                                
-                                <select  class="form-control" name="driver_name">
-                                
-                                @foreach($driver as $names)
-                                   @if( $truck->driver_id == $names->id)
-                                        <option value="{{ $names->id}}" selected name="driver_name">{{ $names->name }}</option>
-                                    @else
-                                        <option value="{{ $value->id }}"  name="driver_name">{{ $names->name }}</option>
-                                    @endif
-                                @endforeach
-                                </select>
-                                @if($errors->has('driver_name'))
-                                    <span class="invalid-feedback" role="alert" style="color:red">
-                                        <strong>{{ $errors->first('driver_name') }}</strong>
-                                    </span>
-                                @enderror
+                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
+                                <label for="driver_mobile">Driver Name<span><b style="color: red"> * </b></span></label>
+                                <input type="text" class="form-control"  id="driver_name"  value="{{$truck->driver_name}}" disabled/>
                             </div>
                         </div>
-                        <div class="well" style="overflow: auto">
+    	            	<div class="well" style="overflow: auto">
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
-                                <label for="source">Source<span><b style="color: red"> * </b></span></label>
-                                <select class="form-control" id ="source" name="source" >
-                                    @foreach($city as $values)
-                                        @if($truck->source == $values->id)
-                                            <option value="{{ $values->id }}" selected name="city">{{ $values->name }}</option>
-                                        @else
-                                            <option value="{{ $value->id }}"  name="city">{{ $value->name }}</option>
-                                        @endif
+                                <label for="truck_type">Truck Type<span><b style="color: red"> * </b></span></label>
+                                <select  class="form-control" name="truck_type">
+                                    <option value="">Please Select Truck Type</option>
+                                    @if (isset($truck_type) && !empty($truck_type))
+                                        @foreach ($truck_type as $item)
+                                            <option value="{{$item->id}}" {{ $item->id == $truck->truck_type ? 'selected' : ''}}>{{ $item->name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                @if($errors->has('truck_type'))
+                                    <span class="invalid-feedback" role="alert" style="color:red">
+                                        <strong>{{ $errors->first('truck_type') }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
+                                <label for="source_state">Source State</label>
+                                <select class="form-control" name="source_state" onchange="cityFetch(this.value)">
+                                    <option value="">Select State</option>
+                                    @foreach($state as $item)
+                                        <option value="{{ $item->id }}"  {{$item->id == $selected_state ? 'selected' : ''}}>{{ $item->name }}</option>
                                     @endforeach
                                 </select>
-                                @if($errors->has('source'))
+                                @if($errors->has('source_state'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
-                                        <strong>{{ $errors->first('source') }}</strong>
+                                        <strong>{{ $errors->first('source_state') }}</strong>
                                     </span>
                                 @enderror
                             </div>
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
-                                <label for="weight">Weight<span><b style="color: red"> * </b></span></label>
-                                <select class="form-control" name="weight" id="weight">
-                                    @if(!empty($weight))
-                                        @foreach($weight as $value)
-                                            @if($value->id == $truck->weight_id)
-                                                <option value="{{ $value->id }}" selected name="weight">{{ $value->weight }}</option>
-                                            @else
-                                            <option value="{{ $value->id }}"  name="weight">{{ $value->weight }}</option>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <option value="" >No Weight Found</option>
-                                    @endif
-
-                                    
+                                <label for="source_city">Source City<span><b style="color: red"> * </b></span></label>
+                                <select class="form-control" name="source_city" id="city">
+                                    <option value="">Please Select Source</option>
+                                    @forelse ($city as $item)
+                                        <option value="{{ $item->id }}" {{$item->id == $truck->source ? 'selected' : ''}}>{{ $item->name }}</option>
+                                    @empty
+                                    @endforelse
                                 </select>
-                                @if($errors->has('weight'))
+                                @if($errors->has('source_city'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
-                                        <strong>{{ $errors->first('weight') }}</strong>
+                                        <strong>{{ $errors->first('source_city') }}</strong>
                                     </span>
                                 @enderror
                             </div>
-                           
-                            
-                            
-                           
+                            <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
+                                <label for="capacity">Truck Capacity<span><b style="color: red"> * </b></span></label>
+                                <select class="form-control" name="capacity">
+                                    <option value="">Please Select Capacity</option>
+                                    @foreach($weight as $value)
+                                        <option value="{{ $value->id }}" name="weight" {{ $value->id == $truck->weight_id ? 'selected' : '' }}>{{ $value->weight }} MT</option>
+                                    @endforeach
+                                </select>
+                                @if($errors->has('capacity'))
+                                    <span class="invalid-feedback" role="alert" style="color:red">
+                                        <strong>{{ $errors->first('capacity') }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
+                                <label for="truck_number">Truck Number<span><b style="color: red"> * </b></span></label>
+                                <input type="text"class="form-control" name="truck_number" placeholder="Enter Truck Number" value="{{ $truck->truck_number }}"/>
+                                @if($errors->has('truck_number'))
+                                    <span class="invalid-feedback" role="alert" style="color:red">
+                                        <strong>{{ $errors->first('truck_number') }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="well" style="overflow: auto">
-                            <div class="form-group">
-                                {{ Form::label('image', 'Image')}} 
-                                 <input type="file" class="form-control" name="images">
-                                 @if($errors->has('images'))
-                                     <span class="invalid-feedback" role="alert" style="color:red">
-                                         <strong>{{ $errors->first('images') }}</strong>
-                                     </span> 
-                                 @enderror
-                             </div>
-                        </div>
-                        <div class="form-group">    	            	
-                        {{ Form::submit('Submit', array('class'=>'btn btn-success')) }}  
+                        <div class="form-group">
+                        {{ Form::submit('Save', array('class'=>'btn btn-sm btn-success')) }}
+                        <a class="btn btn-sm btn-danger" onclick="window.close();">Close</a>
     	            	</div>
     	            	{{ Form::close() }}
-
     	            </div>
     	        </div>
     	    </div>
@@ -154,7 +142,80 @@
     	{{-- <div class="col-md-2"></div> --}}
     </div>
 </div>
+@endsection
 
+@section('script')
+<script src="{{asset('admin/jquery-confirm-v3.3.4/dist/jquery-confirm.min.js')}}"></script>
+    <script>
+        function cityFetch(state_id) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type:"GET",
+                url:"{{ url('/admin/city/fetch/by/state/')}}"+"/"+state_id+"",
+                success:function(data){
+                    if ($.isEmptyObject(data)) {
+                        $("#city").html("<option value=''>No City Found</option>");
+                    }else {
+                        $("#city").html("<option value=''>Please Select City</option>");
+                        $.map( data, function( val, i ) {
+                            $("#city").append("<option value='"+i+"'>"+val+"</option>");
+                        });
+                    }
+                }
+            });
+        }
 
- @endsection
- 
+        function checkOwner(mobile){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+            });
+            $.ajax({
+                method: "GET",
+                url   : "{{ url('admin/client/owner/verify/') }}"+"/"+mobile+"",
+                success: function(data) {
+                    $("#owner_name").val('');
+                    $("#owner_verify_error").html('');
+                    if ($.isEmptyObject(data.name)) {
+                        $("#owner_verify_error").html(`<b style="color:red">Sorry No Owner Found</b>`);
+                    } else {
+                        $("#owner_name").val(data.name);
+                    }
+                }
+            });
+        }
+
+        function checkDriver(mobile){
+            var owner = $('#owner_mobile').val();
+            if (owner) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                });
+                $.ajax({
+                    method: "GET",
+                    url   : "{{ url('admin/client/driver/verify/') }}"+"/"+mobile+"/"+owner,
+                    success: function(data) {
+                        $("#driver_name").val('');
+                        $("#driver_mobile_error").html('');
+                        if ($.isEmptyObject(data.name)) {
+                            $("#driver_mobile_error").html(`<b style="color:red">Sorry No Driver Found</b>`);
+                        } else {
+                            $("#driver_name").val(data.name);
+                        }
+                    }
+                });
+            }else{
+                $("#driver_mobile_error").html('<span style="color:red">Please Select Owner First</span>');
+                $("#driver_mobile").val("");
+            }
+        }
+
+    </script>
+@endsection

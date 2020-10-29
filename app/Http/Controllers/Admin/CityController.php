@@ -56,20 +56,25 @@ class CityController extends Controller
         $city = City::where('id',$id)->first();
         return view('admin.city.city_add_form',compact('city','states'));
     }
-    
-    public function cityUpdate(Request $request,$id){   
+
+    public function cityUpdate(Request $request,$id){
         $this->validate($request, [
             'state'=>'required',
             'name'   => 'required'
-            
+
         ]);
         City::where('id',$id)
             ->update([
                 'state_id'=>$request->input('state'),
                 'name'=>$request->input('name'),
-                
+
             ]);
             return redirect()->back()->with('message','City Updated Successfully');
-        
+
+    }
+
+    public function cityFetchByState($state_id){
+        $city = City::Where('state_id',$state_id)->pluck('name','id');
+        return $city;
     }
 }

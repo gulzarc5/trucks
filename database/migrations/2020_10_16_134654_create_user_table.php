@@ -17,7 +17,7 @@ class CreateUserTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->integer('mobile')->unique();
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->char('user_type')->comment('1=owner,2=driver');
             $table->char('driving')->comment('1=by owner, 2=by driver');
             $table->string('state')->nullable();
