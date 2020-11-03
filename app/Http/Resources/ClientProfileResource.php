@@ -24,6 +24,7 @@ class ClientProfileResource extends JsonResource
             'pin' => $this->pin,
             'address' => $this->address,
             'image'=> $this->image,
+            'user_type' => $this->user_type,
         ];
     }
 }

@@ -29,4 +29,8 @@ class Truck extends Model
     {
         return $this->belongsTo('App\Models\City','source',$this->primaryKey);
     }
+    public function images()
+    {
+        return $this->hasMany('App\Models\TruckImage','truck_id',$this->primaryKey);
+    }
 }
