@@ -77,6 +77,8 @@ class ClientController extends Controller
         $owner->save();
         if($owner){
             $wallet = new Wallet();
+            $wallet->user_id = $owner->id;
+            $owner->save();
             return redirect()->back()->with('message','Owner Added Successfully');
         }else {
             return redirect()->back()->with('error','Something Went Wrong Please Try Again');
@@ -243,6 +245,9 @@ class ClientController extends Controller
         $driver->save();
 
         if($driver){
+            $wallet = new Wallet();
+            $wallet->user_id = $driver->id;
+            $owner->save();
             return redirect()->back()->with('message','Driver Added Successfully');
         }else {
             return redirect()->back()->with('error','Something Went Wrong Please Try Again');

@@ -8,6 +8,7 @@ use Validator;
 use File;
 use Intervention\Image\Facades\Image;
 use App\Models\User;
+use App\Models\Wallet;
 use Hash;
 use Illuminate\Support\Str;
 use App\Http\Resources\ClientProfileResource;
@@ -65,6 +66,9 @@ class ClientController extends Controller
         }
         $owner->save();
         if($owner){
+            $wallet = new Wallet();
+            $wallet->user_id = $owner->id;
+            $owner->save();
             $response = [
                 'status' => true,
                 'message' => 'Client Registered Successfully',
