@@ -45,7 +45,10 @@ Route::group(['namespace' => 'Admin'],function(){
 
         Route::group(['prefix'=>'customer'],function(){
             Route::get('list','CustomerController@customerList')->name('admin.customer_list');
-            Route::get('list/ajax','CustomerController@customerListAjax')->name('admin.customer_list_ajax');
+            Route::get('corporate/list','CustomerController@corporateCustomerList')->name('admin.corporate_customer_list');
+            // Route::get('list/ajax','CustomerController@customerListAjax')->name('admin.customer_list_ajax');
+            Route::get('list/individual/ajax','CustomerController@IndividualCustomerListAjax')->name('admin.individual_customer_list_ajax');
+            Route::get('list/corporate/ajax','CustomerController@CorporateCustomerListAjax')->name('admin.corporate_customer_list_ajax');
             Route::get('status/{id}/{status}','CustomerController@status')->name('admin.customer_status');
             Route::get('edit/form/{id}','CustomerController@editCustomerForm')->name('admin.edit_customer_form');
             Route::post('update/{id}','CustomerController@updateCustomer')->name('admin.update_customer');

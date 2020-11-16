@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\User;
+use App\Models\Customer;
+use App\Models\OrderCustomer;
 use App\Models\Product;
 use App\Models\Order;
 use Illuminate\Support\Facades\Hash;
@@ -15,8 +17,18 @@ class DashboardController extends Controller
 {
     public function dashboardView()
     {
-        return view('admin.dashboard');
+        $owners = User::where('user_type',1)->count();
+       
+        $drivers = User::where('user_type',2)->count();
+        $customers = Customer::count();
+        $orders=OrderCustomer::count();
+        $order_details = $orders->get();
+        $bids = OrderCustomer::where('bid_status',1)->count();
+        return view('admin.dashboard',compact('owners','drivers','customers','orders','bids'));
+       
     }
+
+    
 }
     // function chartData(){
     //     $data[] = [

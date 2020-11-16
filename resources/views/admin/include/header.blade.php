@@ -96,7 +96,11 @@
                     </ul>
                   </li>
 
-                  <li><a href="{{route('admin.customer_list')}}"><i class="fa fa-user"></i> Customer List</a>
+                  <li><a><i class="fa fa-gear" aria-hidden="true"></i> Customer List <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li class="sub_menu"><a href="{{ route('admin.customer_list') }}">Individual Customer  List</a></li>
+                      <li class="sub_menu"><a href="{{ route('admin.corporate_customer_list') }}">Corporate Customer List</a></li>
+                    </ul>
                   </li>
 
                   <li><a><i class="fa fa-gear" aria-hidden="true"></i> Client List <span class="fa fa-chevron-down"></span></a>
