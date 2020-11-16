@@ -10,6 +10,11 @@ class TruckServiceArea extends Model
     protected $primaryKey = "id";
 
     protected $fillable = [
-        'truck_id', 'service_area'
+        'truck_id', 'service_area','is_source','status'
     ];
+
+    public function city()
+    {
+        return $this->belongsTo('App\Models\City','service_area','id');
+    }
 }

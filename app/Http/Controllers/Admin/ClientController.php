@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\City;
 use App\Models\State;
+use App\Models\Wallet;
 use File;
 use Intervention\Image\Facades\Image;
 
@@ -23,7 +24,7 @@ class ClientController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function($row){
                 $btn ='<a href="'. route('admin.edit_owner_form',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Edit</a>
-                <a href="'. route('admin.owner_detail',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">View Details</a>';
+                <a href="'. route('admin.client_detail',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">View Details</a>';
                 if ($row->status == '1') {
                     $btn .='<a href="'.route('admin.owner_status',['id'=>encrypt($row->id),'status'=>2]).'" class="btn btn-danger btn-sm" >Disable</a>';
                 } else {
@@ -75,6 +76,7 @@ class ClientController extends Controller
         }
         $owner->save();
         if($owner){
+            $wallet = new Wallet();
             return redirect()->back()->with('message','Owner Added Successfully');
         }else {
             return redirect()->back()->with('error','Something Went Wrong Please Try Again');
@@ -163,11 +165,11 @@ class ClientController extends Controller
         return $owner;
     }
 
-    public function ownerDetail($id)
-    {
-        $owner = User::findOrFail($id);
-        return view('admin.client.owner.owner_details',compact('owner'));
-    }
+    // public function ownerDetail($id)
+    // {
+    //     $owner = User::findOrFail($id);
+    //     return view('admin.client.owner.owner_details',compact('owner'));
+    // }
 
     // For Driver //
 
@@ -180,7 +182,8 @@ class ClientController extends Controller
         return datatables()->of(User::where('user_type',2)->get())
             ->addIndexColumn()
             ->addColumn('action', function($row){
-                $btn ='<a href="'.  route('admin.edit_driver_form',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Edit</a>';
+                $btn ='<a href="'.  route('admin.driver_detail',['id'=>$row->id]) .'" class="btn btn-info btn-sm" target="_blank">Vieew</a>
+                <a href="'.  route('admin.edit_driver_form',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Edit</a>';
                 if ($row->status == '1') {
                     $btn .='<a href="'.route('admin.driver_status',['id'=>encrypt($row->id),'status'=>2]).'" class="btn btn-danger btn-sm" >Disable</a>';
                 } else {
@@ -318,12 +321,23 @@ class ClientController extends Controller
 
     public function driverVerify($driver_mobile,$owner_mobile)
     {
-        $owner = User::select('id')->where('mobile',$owner_mobile)->where('user_type',1)->first();
-        $driver = null;
-        if($owner){
-            $driver = User::select('id','name')->where('mobile',$driver_mobile)->where('owner_id',$owner->id)->where('user_type',2)->first();
-        }
+        $owner = User::where('status',1)->where('mobile',$owner_mobile)->first();
+        $owner_id = $owner->id;
+        $driver = User::where('status',1)
+        ->where(function($q) use ($owner_mobile){
+            $q->where('mobile',$owner_mobile)->where('user_type',1);
+        })
+        ->orWhere(function($q) use ($owner_id,$driver_mobile){
+            $q->where('id',$owner_id)->where('mobile',$driver_mobile)->where('user_type',1);
+        })
+        ->first();
         return $driver;
     }
 
+
+    public function clientDetail($client_id)
+    {
+        $client = User::findOrFail($client_id);
+        return view('admin.client.client_details',compact('client'));
+    }
 }

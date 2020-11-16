@@ -29,5 +29,18 @@ class User extends Authenticatable
     {
         return $this->belongsTo('App\Models\City','city',$this->primaryKey);
     }
+    public function trucks()
+    {
+        return $this->hasMany('App\Models\Truck','owner_id',$this->primaryKey);
+    }
+
+    public function drivers()
+    {
+        return $this->hasMany('App\Models\User','owner_id',$this->primaryKey);
+    }
+    public function driverTruck()
+    {
+        return $this->hasOne('App\Models\Truck','driver_id','id');
+    }
 
 }

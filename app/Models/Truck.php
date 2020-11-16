@@ -13,6 +13,11 @@ class Truck extends Model
         'truck_type', 'weight_id','owner_id','driver_id','source','image', 'status','truck_number'
     ];
 
+    public function truckType()
+    {
+        return $this->belongsTo('App\Models\TruckType','truck_type',$this->primaryKey);
+    }
+
     public function capacity()
     {
         return $this->belongsTo('App\Models\TruckWeight','weight_id',$this->primaryKey);
@@ -28,6 +33,10 @@ class Truck extends Model
     public function sourceCity()
     {
         return $this->belongsTo('App\Models\City','source',$this->primaryKey);
+    }
+    public function serviceCity()
+    {
+        return $this->hasMany('App\Models\TruckServiceArea','truck_id',$this->primaryKey);
     }
     public function images()
     {

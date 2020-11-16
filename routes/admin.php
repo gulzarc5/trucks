@@ -49,8 +49,12 @@ Route::group(['namespace' => 'Admin'],function(){
             Route::get('status/{id}/{status}','CustomerController@status')->name('admin.customer_status');
             Route::get('edit/form/{id}','CustomerController@editCustomerForm')->name('admin.edit_customer_form');
             Route::post('update/{id}','CustomerController@updateCustomer')->name('admin.update_customer');
+
+            Route::get('details/{id}','CustomerController@customerDetails')->name('admin.customer_details');
         });
+
         Route::group(['prefix'=>'client'],function(){
+            Route::get('detail/{id}','ClientController@clientDetail')->name('admin.client_detail');
             Route::group(['prefix'=>'owner'],function(){
                 Route::get('list','ClientController@ownerList')->name('admin.owner_list');
                 Route::get('add/form','ClientController@ownerAddForm')->name('admin.owner_add_form');
@@ -73,7 +77,7 @@ Route::group(['namespace' => 'Admin'],function(){
                 Route::get('status/{id}/{status}','ClientController@driverStatus')->name('admin.driver_status');
                 Route::get('verify/{driver_mobile}/{owner_mobile}','ClientController@driverVerify')->name('admin.owner_verify');
 
-                Route::get('detail/{id}','ClientController@driverDetail')->name('admin.driver_detail');
+                Route::get('detail/{id}','ClientController@clientDetail')->name('admin.driver_detail');
             });
             Route::group(['prefix'=>'truck'],function(){
                 Route::get('list','TruckController@trucksList')->name('admin.trucks_list');
@@ -88,6 +92,8 @@ Route::group(['namespace' => 'Admin'],function(){
                 Route::post('add/new/images/','TruckController@addNewImages')->name('admin.truck_add_new_images');
                 Route::get('make/cover/image/{truck_id}/{image_id}','TruckController@makeCoverImage')->name('admin.truck_make_cover_image');
                 Route::get('delete/image/{image_id}','TruckController@deleteImage')->name('admin.truck_delete_image');
+
+                Route::get('detail/{id}','TruckController@truckDetail')->name('admin.truck_detail');
 
             });
         });

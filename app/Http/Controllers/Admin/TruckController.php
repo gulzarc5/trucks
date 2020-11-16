@@ -11,6 +11,7 @@ use App\Models\State;
 use App\Models\TruckWeight;
 use App\Models\TruckType;
 use App\Models\TruckImage;
+use App\Models\TruckServiceArea;
 use File;
 use Image;
 class TruckController extends Controller
@@ -24,7 +25,8 @@ class TruckController extends Controller
         return datatables()->of(Truck::get())
             ->addIndexColumn()
             ->addColumn('action', function($row){
-                $btn ='<a href="'.  route('admin.edit_truck_form',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Edit</a>
+                $btn ='<a href="'.  route('admin.truck_detail',['id'=>$row->id]) .'" class="btn btn-info btn-sm" target="_blank">View</a>
+                <a href="'.  route('admin.edit_truck_form',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Edit</a>
                 <a href="'.  route('admin.truck_images',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Images</a>';
                 if ($row->status == '1') {
                     $btn .='<a href="'.route('admin.truck_status',['id'=>encrypt($row->id),'status'=>2]).'" class="btn btn-danger btn-sm" >Disable</a>';
@@ -59,7 +61,8 @@ class TruckController extends Controller
             'source_city'=>'required',
             'capacity'=>'required',
             'truck_number'=>'required',
-            'images.*'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'images.*'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'service_city.*'=>'required',
         ]);
         $owner_mobile = $request->input('owner_mobile');
         $driver_mobile = $request->input('driver_mobile');
@@ -68,11 +71,19 @@ class TruckController extends Controller
         if ($check_owner->count() == 0) {
             return redirect()->back()->with('error','Owner Not Found');
         }
-        $check_driver = User::where('mobile',$driver_mobile)->where('user_type',2);
+        $owner_data = $check_owner->first();
+        $owner_id = $owner_data->id;
+        $check_driver = User::where('status',1)
+        ->where(function($q) use ($owner_mobile){
+            $q->where('mobile',$owner_mobile)->where('user_type',1);
+        })
+        ->orWhere(function($q) use ($owner_id,$driver_mobile){
+            $q->where('id',$owner_id)->where('mobile',$driver_mobile)->where('user_type',1);
+        });
         if ($check_driver->count() == 0) {
             return redirect()->back()->with('error','Driver Not Found');
         }
-        $owner_data = $check_owner->first();
+
         $driver_data = $check_driver->first();
 
         $truck = new Truck();
@@ -111,6 +122,26 @@ class TruckController extends Controller
                     $truck_image->save();
                 }
             }
+
+            //Service Area
+            $service_area = new TruckServiceArea();
+            $service_area->truck_id = $truck->id;
+            $service_area->service_area = $request->input('source_city');
+            $service_area->is_source = 2;
+            $service_area->save();
+
+            $service_city = $request->input('service_city');
+            foreach ($service_city as $key => $city) {
+                $check = TruckServiceArea::where('truck_id',$truck->id)->where('service_area',$city)->count();
+                if ($check == 0){
+                    $service_area = new TruckServiceArea();
+                    $service_area->truck_id = $truck->id;
+                    $service_area->service_area = $city;
+                    $service_area->save();
+                }
+            }
+            //
+
             return redirect()->back()->with('message','Truck Added Successfully');
         }else{
             return redirect()->back()->with('error','Something went wrong Please Try Again');
@@ -255,5 +286,11 @@ class TruckController extends Controller
         }
         TruckImage::where('id', $image_id)->delete();
         return redirect()->back();
+    }
+
+    public function truckDetail($truck_id)
+    {
+        $truck = Truck::findOrFail($truck_id);
+        return view('admin.truck.truck_details',compact('truck'));
     }
 }

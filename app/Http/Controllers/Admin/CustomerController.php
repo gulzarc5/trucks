@@ -20,7 +20,8 @@ class CustomerController extends Controller
         return datatables()->of(Customer::get())
             ->addIndexColumn()
             ->addColumn('action', function($row){
-                $btn ='<a href="'.route('admin.edit_customer_form',['id'=>$row->id]).'" class="btn btn-warning btn-sm" target="_blank">Edit</a>';
+                $btn ='<a href="'.route('admin.customer_details',['id'=>$row->id]).'" class="btn btn-info btn-sm" target="_blank">View</a>
+                <a href="'.route('admin.edit_customer_form',['id'=>$row->id]).'" class="btn btn-warning btn-sm" target="_blank">Edit</a>';
                 if ($row->status == '1') {
                     $btn .='<a href="'.route('admin.customer_status',['id'=>$row->id,'status'=>2]).'" class="btn btn-danger btn-sm" >Disable</a>';
                 } else {
@@ -85,6 +86,12 @@ class CustomerController extends Controller
         }
 
 
+    }
+
+    public function customerDetails($customer_id)
+    {
+        $customer = Customer::where('id',$customer_id)->first();
+        return view('admin.customer.customer_details',compact('customer'));
     }
 
 

@@ -39,6 +39,12 @@ Route::group(['namespace'=>'Api'],function(){
             Route::post('add','TruckController@addTruck');
             Route::get('list/owner/{owner_id}','TruckController@truckList');
             Route::get('fetch/by/id/{truck_id}','TruckController@truckFetchById');
+            Route::put('update/{truck_id}','TruckController@truckUpdate');
+            Route::put('new/image/{truck_id}','TruckController@addNewImage');
+            Route::get('image/set/thumb/{truck_id}/{image_id}','TruckController@setTruckImageThumb');
+            Route::get('image/delete/{image_id}','TruckController@truckImageDelete');
+            Route::get('status/update/{truck_id}/{status}','TruckController@truckStatusUpdate');
+            Route::put('change/driver/{truck_id}','TruckController@changeDriver');
         });
     });
 });
