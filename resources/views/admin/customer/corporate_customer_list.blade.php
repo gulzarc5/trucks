@@ -51,7 +51,7 @@
        var table = $('#user').DataTable({
            processing: true,
            serverSide: true,
-           ajax: "{{ route('admin.individual_customer_list_ajax') }}",
+           ajax: "{{ route('admin.corporate_customer_list_ajax') }}",
            columns: [
                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                {data: 'name', name: 'name',searchable: true},
