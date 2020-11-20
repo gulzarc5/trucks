@@ -101,9 +101,14 @@ Route::group(['namespace' => 'Admin'],function(){
             });
         });
 
+        Route::group(['prefix' => 'order'],function(){
+            Route::get('new/list','OrderController@newOrders')->name('admin.new_order_list');
+            Route::get('approved/list','OrderController@approvedOrders')->name('admin.approved_order_list');
+            Route::get('update/status/{id}/{status}','OrderController@updateStatus')->name('admin.update_order_status');
+
+            Route::get('bid/{order_id}','BidController@bidList')->name('admin.bid_list');
+        });
+
         // Ajax//
-
-
-
     });
 });

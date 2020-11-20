@@ -15,6 +15,9 @@ class CreateBidsTable extends Migration
     {
         Schema::create('bids', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('order_id');
+            $table->double('bid_amount',0,2)->nullable();
+            $table->char('status',1)->default(1)->comment('1 = New, 2 = Waiting, 3 = Accepted');
             $table->timestamps();
         });
     }

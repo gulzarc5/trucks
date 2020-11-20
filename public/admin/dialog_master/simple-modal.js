@@ -14,7 +14,7 @@ class SimpleModal {
     this.acceptButton = undefined;
     this.cancelButton = undefined;
     this.closeButton = undefined;
-
+    
     this._createModal();
   }
 
@@ -91,11 +91,11 @@ class SimpleModal {
     buttonGroup.appendChild(this.acceptButton);
 
     // Cancel button
-    // this.cancelButton = document.createElement('button');
-    // this.cancelButton.type = "button";
-    // this.cancelButton.classList.add('simple-modal-button-red');
-    // this.cancelButton.textContent = this.cancelText;
-    // buttonGroup.appendChild(this.cancelButton);
+    this.cancelButton = document.createElement('button');
+    this.cancelButton.type = "button";
+    this.cancelButton.classList.add('simple-modal-button-red');
+    this.cancelButton.textContent = this.cancelText;
+    buttonGroup.appendChild(this.cancelButton);
 
     // Let's rock
     this.parent.appendChild(this.modal);

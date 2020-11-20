@@ -18,6 +18,8 @@ Route::group(['namespace'=>'Api'],function(){
         Route::get('profile/{id}', 'CustomerController@profileFetch');
         Route::put('profile/update/{id}', 'CustomerController@profileUpdate');
         Route::put('change/password/{id}', 'CustomerController@changePassword');
+
+        Route::post('order/place','OrderController@orderPlace');
     });
 
 
@@ -45,6 +47,11 @@ Route::group(['namespace'=>'Api'],function(){
             Route::get('image/delete/{image_id}','TruckController@truckImageDelete');
             Route::get('status/update/{truck_id}/{status}','TruckController@truckStatusUpdate');
             Route::put('change/driver/{truck_id}','TruckController@changeDriver');
+        });
+
+        Route::group(['prefix' =>'bid'],function (){
+            Route::get('order/list/{client_id}','OrderController@clientOrderList');
+            Route::post('place/bid/order','BidController@placeBid');
         });
     });
 });

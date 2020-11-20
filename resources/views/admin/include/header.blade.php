@@ -86,16 +86,15 @@
                 <ul class="nav side-menu">
                   <li><a href="{{ route('admin.deshboard')}}"><i class="fa fa-home"></i> Home </span></a></li>
 
-                  <li><a><i class="fa fa-gear" aria-hidden="true"></i> Configuration <span class="fa fa-chevron-down"></span></a>
-                    <ul class="nav child_menu">
-                      <li class="sub_menu"><a href="{{ route('admin.state_list') }}">State  List</a></li>
-                      <li class="sub_menu"><a href="{{ route('admin.city_list') }}">City List</a></li>
-                      <li class="sub_menu"><a href="{{ route('admin.truck_type_list') }}">Truck Type List</a></li>
-                      <li class="sub_menu"><a href="{{ route('admin.truck_capacity_list') }}">Truck Capacity List</a></li>
 
+
+                  <li><a><i class="fa fa-gear" aria-hidden="true"></i> Orders<span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li class="sub_menu"><a href="{{ route('admin.new_order_list') }}">New Orders</a></li>
+                      <li class="sub_menu"><a href="{{ route('admin.approved_order_list') }}">Approved Orders</a></li>
+                      {{-- <li class="sub_menu"><a href="{{ route('admin.corporate_customer_list') }}">Corporate Customer List</a></li> --}}
                     </ul>
                   </li>
-
                   <li><a><i class="fa fa-gear" aria-hidden="true"></i> Customer List <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li class="sub_menu"><a href="{{ route('admin.customer_list') }}">Individual Customer  List</a></li>
@@ -109,7 +108,18 @@
                       <li class="sub_menu"><a href="{{ route('admin.driver_list') }}">Driver List</a></li>
                     </ul>
                   </li>
+
                   <li><a href="{{ route('admin.trucks_list') }}"><i class="fa fa-truck"></i> Truck List</a>
+                  </li>
+
+                  <li><a><i class="fa fa-gear" aria-hidden="true"></i> Configuration <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li class="sub_menu"><a href="{{ route('admin.state_list') }}">State  List</a></li>
+                      <li class="sub_menu"><a href="{{ route('admin.city_list') }}">City List</a></li>
+                      <li class="sub_menu"><a href="{{ route('admin.truck_type_list') }}">Truck Type List</a></li>
+                      <li class="sub_menu"><a href="{{ route('admin.truck_capacity_list') }}">Truck Capacity List</a></li>
+
+                    </ul>
                   </li>
 
                   {{-- <li><a><i class="fa fa-cogs" aria-hidden="true"></i> Categories <span class="fa fa-chevron-down"></span></a>
