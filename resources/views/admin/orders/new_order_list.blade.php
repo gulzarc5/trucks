@@ -17,15 +17,16 @@
                         <table id="user" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                <th>Sl</th>
-                                <th>Action</th>
-                                <th>Order By</th>
-                                <th>Truck Type</th>
-                                <th>Source</th>
-                                <th>Destinatin</th>
-                                <th>Weight</th>
-                                <th>No of Trucks</th>
-                                <th>Date</th>
+                                    <th>Sl</th>
+                                    <th>Action</th>
+                                    <th>User Type</th>
+                                    <th>Order By</th>
+                                    <th>Truck Type</th>
+                                    <th>Source</th>
+                                    <th>Destinatin</th>
+                                    <th>Weight</th>
+                                    <th>No of Trucks</th>
+                                    <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -39,6 +40,16 @@
                                         <td id="action{{$item->id}}">
                                             <a href="#" class="btn btn-sm btn-primary" onclick="openModal({{$item->id}},'2',{{$item->id}},'Are You Sure To Approve ? ')" >Approve</a>
                                             <a href="#" class="btn btn-sm btn-danger"  onclick="openModal({{$item->id}},'4',{{$item->id}},'Are You Sure To Reject ? ')">Reject</a>
+                                        </td>
+                                       
+                                        <td>
+                                            @if (isset($item->customer->user_type))
+                                                @if ($item->customer->user_type == '1')
+                                                    Individual User
+                                                @else
+                                                    Corporate User
+                                                @endif
+                                            @endif
                                         </td>
                                         <td>{{ isset($item->customer->name) ? $item->customer->name : ''}}</td>
                                         <td>{{ isset($item->truckType->name) ? $item->truckType->name : ''}}</td>

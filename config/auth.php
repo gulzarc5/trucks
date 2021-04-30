@@ -54,6 +54,11 @@ return [
             'provider' => 'user',
             'hash' => false,
         ],
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'user',
+            'hash' => false,
+        ],
 
         'customerApi' => [
             'driver' => 'token',

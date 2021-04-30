@@ -12,6 +12,7 @@ use App\Models\Wallet;
 use Hash;
 use Illuminate\Support\Str;
 use App\Http\Resources\ClientProfileResource;
+use App\Models\SignUpOtp;
 
 class ClientController extends Controller
 {
@@ -21,54 +22,65 @@ class ClientController extends Controller
         $validator =  Validator::make($request->all(), [
             'name'=>'required',
             'mobile'=>'required|numeric|digits:10|unique:user,mobile',
-            'image'=>'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'password' => 'required|string|min:8',
-            'user_type' => 'required|in:1,2'
+            'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'password' => 'required|string|min:8|same:confirm_password',
+            'user_type' => 'required|in:1,2,3', //1 = owner, 2 = Driver , 3 = Broker
+            'otp' => 'required|numeric|digits:5'
         ]);
         if ($validator->fails()) {
             $response = [
                 'status' => false,
-                'message' => 'Required Field Can not be Empty',
+                'message' => 'Validation Error',
                 'error_code' => true,
                 'error_message' => $validator->errors(),
             ];
             return response()->json($response, 200);
         }
+
+        $otp_check = SignUpOtp::where('mobile',$request->input('mobile'))->where('otp',$request->input('otp'))->count();
+        if ($otp_check == 0) {
+            $response = [
+                'status' => false,
+                'message' => 'Sorry Otp Is Invalid',
+                'error_code' => false,
+                'error_message' => null,
+            ];
+            return response()->json($response, 200);
+        }
+
         $user_type = $request->input('user_type');
-        $owner = new User();
-        $owner->name = $request->input('name');
-        $owner->mobile =$request->input('mobile');
-        $owner->email = $request->input('email');
-        $owner->user_type = $user_type;
-        $owner->city = $request->input('city');
-        $owner->state = $request->input('state');
-        $owner->address = $request->input('address');
-        $owner->pin = $request->input('pin');
-        $owner->password = Hash::make($request->input('password'));
+        $user = new User();
+        $user->name = $request->input('name');
+        $user->mobile =$request->input('mobile');
+        $user->email = $request->input('email');
+        $user->user_type = $user_type;
+        $user->city = $request->input('city');
+        $user->state = $request->input('state');
+        $user->address = $request->input('address');
+        $user->pin = $request->input('pin');
+        $user->password = Hash::make($request->input('password'));
 
         if ($request->hasFile('image')) {
 
             $image = $request->file('image');
             $image_name =time() . date('Y-M-d') . '.' . $image->getClientOriginalExtension();
-            $destination = ($user_type == 1) ? public_path(). '/images/owner' : public_path(). '/images/driver';
-            File::isDirectory($destination) or File::makeDirectory($destination, 0777, true, true);
 
-            $destinationPath = ($user_type == 1) ? public_path() . '/images/owner' :  public_path() . '/images/driver';
+            $destinationPath = ($user_type == 2) ? public_path() . '/images/driver' :  public_path() . '/images/owner';
             $img = Image::make($image->getRealPath());
             $img->save($destinationPath . '/' . $image_name);
 
-            $thumb =  ($user_type == 1) ? public_path().'/images/owner/thumb' : public_path().'/images/driver/thumb';
+            $thumb =  ($user_type == 2) ? public_path().'/images/driver/thumb' : public_path().'/images/owner/thumb';
             $img = Image::make($image->getRealPath());
             $img->resize(300, 300, function ($constraint) {
                 $constraint->aspectRatio();
             })->save($thumb . '/' . $image_name);
-            $owner->image = $image_name;
+            $user->image = $image_name;
         }
-        $owner->save();
-        if($owner){
+        $user->save();
+        if($user){
             $wallet = new Wallet();
-            $wallet->user_id = $owner->id;
-            $owner->save();
+            $wallet->user_id = $user->id;
+            $wallet->save();
             $response = [
                 'status' => true,
                 'message' => 'Client Registered Successfully',
@@ -96,7 +108,7 @@ class ClientController extends Controller
         if ($validator->fails()) {
             $response = [
                 'status' => false,
-                'message' => 'Required Field Can not be Empty',
+                'message' => 'Validation Error',
                 'error_code' => true,
                 'error_message' => $validator->errors(),
             ];
@@ -137,9 +149,9 @@ class ClientController extends Controller
 
     }
 
-    public function clientProfile($id)
+    public function clientProfile(Request $request)
     {
-        $owner = User::find($id);
+        $owner = User::find($request->user()->id);
         $response = [
             'status' => true,
             'message' => 'Client Profile',
@@ -148,51 +160,54 @@ class ClientController extends Controller
         return response()->json($response, 200);
     }
 
-    public function clientProfileUpdate(Request $request,$id)
+    public function clientProfileUpdate(Request $request)
     {
+        $id = $request->user()->id;
         $validator =  Validator::make($request->all(), [
             'name'=>'required',
             'mobile'=>'required|numeric|digits:10|unique:user,mobile,'.$id,
-            'image'=>'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'user_type' => 'required|in:1,2'
+            'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         if ($validator->fails()) {
             $response = [
                 'status' => false,
-                'message' => 'Required Field Can not be Empty',
+                'message' => 'Validation Error',
                 'error_code' => true,
                 'error_message' => $validator->errors(),
             ];
             return response()->json($response, 200);
         }
-        $user_type = $request->input('user_type');
         $owner = User::find($id);
         $previous_image = $owner->image;
         $owner->name = $request->input('name');
         $owner->mobile =$request->input('mobile');
         $owner->email = $request->input('email');
-        $owner->user_type = $user_type;
         $owner->city = $request->input('city');
         $owner->state = $request->input('state');
         $owner->address = $request->input('address');
         $owner->pin = $request->input('pin');
-        $owner->password = Hash::make($request->input('password'));
 
         if ($request->hasFile('image')) {
 
             $image = $request->file('image');
             $image_name =time() . date('Y-M-d') . '.' . $image->getClientOriginalExtension();
-            $destination = ($user_type == 1) ? public_path(). '/images/owner' : public_path(). '/images/driver';
+            $destination = ($owner->user_type == 2) ? public_path(). '/images/driver' : public_path(). '/images/owner';
+            $thumb = ($owner->user_type == 2) ? public_path(). '/images/driver/thumb' : public_path(). '/images/owner/thumb';
             File::isDirectory($destination) or File::makeDirectory($destination, 0777, true, true);
             if(!empty($previous_image)){
-                File::exists($destination);
+                if(File::exists($destination)){
+                    File::delete($destination);
+                }
+                if(File::exists($thumb)){
+                    File::delete($thumb);
+                }
             }
 
-            $destinationPath = ($user_type == 1) ? public_path() . '/images/owner' :  public_path() . '/images/driver';
+            $destinationPath = ($owner->user_type == 2) ? public_path() . '/images/driver' :  public_path() . '/images/owner';
             $img = Image::make($image->getRealPath());
             $img->save($destinationPath . '/' . $image_name);
 
-            $thumb =  ($user_type == 1) ? public_path().'/images/owner/thumb' : public_path().'/images/driver/thumb';
+            $thumb =  ($owner->user_type == 2) ? public_path().'/images/driver/thumb' : public_path().'/images/owner/thumb';
             $img = Image::make($image->getRealPath());
             $img->resize(300, 300, function ($constraint) {
                 $constraint->aspectRatio();
@@ -243,11 +258,10 @@ class ClientController extends Controller
     public function addDriver(Request $request)
     {
         $validator =  Validator::make($request->all(), [
-            'owner_id'=>'required',
             'name'=>'required',
             'mobile'=>'required|numeric|digits:10|unique:user,mobile',
-            'password'=>'required|string|min:8',
-            'image'=>'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'password'=>'required|string|min:8|same:confirm_password',
+            'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -259,8 +273,8 @@ class ClientController extends Controller
             ];
             return response()->json($response, 200);
         }
-
-        $check_owner = User::where('id',$request->input('owner_id'))->where('user_type',1);
+        $owner = $request->user()->id;
+        $check_owner = User::where('id',$owner)->where('user_type',1);
         if ($check_owner->count() == 0) {
             $response = [
                 'status' => false,
@@ -271,12 +285,11 @@ class ClientController extends Controller
             return response()->json($response, 200);
         }
 
-        $owner = $check_owner->first();
         $driver = new User();
         $driver->name = $request->input('name');
         $driver->mobile =$request->input('mobile');
         $driver->email = $request->input('email');
-        $driver->owner_id = $owner->id;
+        $driver->owner_id = $owner;
         $driver->user_type = 2;
         $driver->city = $request->input('city');
         $driver->state = $request->input('state');
@@ -286,7 +299,6 @@ class ClientController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-
             $image_name =time() . date('Y-M-d') . '.' . $image->getClientOriginalExtension();
             $destination = public_path() . '/images/driver';
             File::isDirectory($destination) or File::makeDirectory($destination, 0777, true, true);
@@ -300,6 +312,9 @@ class ClientController extends Controller
             $driver->image = $image_name;
         }
         if($driver->save()){
+            $wallet = new Wallet();
+            $wallet->user_id = $driver->id;
+            $wallet->save();
             $response = [
                 'status' => true,
                 'message' => 'Driver Registered Successfully',
@@ -319,8 +334,8 @@ class ClientController extends Controller
 
     }
 
-    public function ownerDriverList($owner_id){
-        $driver = User::select('id','name','mobile','status')->where('owner_id',$owner_id)->get();
+    public function ownerDriverList(Request $request){
+        $driver = User::select('id','name','mobile','status')->where('owner_id',$request->user()->id)->get();
         $response = [
             'status' => true,
             'message' => 'Driver List',

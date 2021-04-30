@@ -27,20 +27,20 @@ Route::group(['namespace' => 'Admin'],function(){
             Route::get('fetch/by/state/{id}', 'CityController@cityFetchByState');
         });
         Route::group(['prefix'=>'truck/type'],function(){
-            Route::get('list','configurationController@truckTypeList')->name('admin.truck_type_list');
-            Route::get('add/form','configurationController@truckTypeAddForm')->name('admin.truck_type_add_form');
-            Route::post('add','configurationController@addTruckType')->name('admin.add_truck_type');
-            Route::get('status/{id}/{status}','configurationController@truckTypeStatus')->name('admin.truck_type_status');
-            Route::get('edit/form/{id}','configurationController@editTruckType')->name('admin.edit_truck_type_form');
-            Route::put('update/{id}','configurationController@updateTruckType')->name('admin.truck_type_update');
+            Route::get('list','ConfigurationController@truckTypeList')->name('admin.truck_type_list');
+            Route::get('add/form','ConfigurationController@truckTypeAddForm')->name('admin.truck_type_add_form');
+            Route::post('add','ConfigurationController@addTruckType')->name('admin.add_truck_type');
+            Route::get('status/{id}/{status}','ConfigurationController@truckTypeStatus')->name('admin.truck_type_status');
+            Route::get('edit/form/{id}','ConfigurationController@editTruckType')->name('admin.edit_truck_type_form');
+            Route::put('update/{id}','ConfigurationController@updateTruckType')->name('admin.truck_type_update');
         });
 
         Route::group(['prefix'=>'truck/capacity'],function(){
-            Route::get('list','configurationController@truckCapacityList')->name('admin.truck_capacity_list');
-            Route::get('add/form','configurationController@truckCapacityAddForm')->name('admin.truck_capacity_add_form');
-            Route::post('add','configurationController@addTruckCapacity')->name('admin.add_truck_capacity');
-            Route::get('edit/form/{id}','configurationController@editTruckCapacity')->name('admin.edit_truck_capacity_form');
-            Route::put('update/{id}','configurationController@updateTruckCapacity')->name('admin.truck_capacity_update');
+            Route::get('list','ConfigurationController@truckCapacityList')->name('admin.truck_capacity_list');
+            Route::get('add/form','ConfigurationController@truckCapacityAddForm')->name('admin.truck_capacity_add_form');
+            Route::post('add','ConfigurationController@addTruckCapacity')->name('admin.add_truck_capacity');
+            Route::get('edit/form/{id}','ConfigurationController@editTruckCapacity')->name('admin.edit_truck_capacity_form');
+            Route::put('update/{id}','ConfigurationController@updateTruckCapacity')->name('admin.truck_capacity_update');
         });
 
         Route::group(['prefix'=>'customer'],function(){
@@ -55,7 +55,7 @@ Route::group(['namespace' => 'Admin'],function(){
 
             Route::get('details/{id}','CustomerController@customerDetails')->name('admin.customer_details');
         });
-
+        
         Route::group(['prefix'=>'client'],function(){
             Route::get('detail/{id}','ClientController@clientDetail')->name('admin.client_detail');
             Route::group(['prefix'=>'owner'],function(){
@@ -66,9 +66,16 @@ Route::group(['namespace' => 'Admin'],function(){
                 Route::get('edit/form/{id}','ClientController@editOwnerForm')->name('admin.edit_owner_form');
                 Route::post('update/{id}','ClientController@updateOwner')->name('admin.update_owner');
                 Route::get('list/ajax','ClientController@ownerListAjax')->name('admin.owner_list_ajax');
-                Route::get('detail/{id}','ClientController@ownerDetail')->name('admin.owner_detail');
 
                 Route::get('verify/{mobile}','ClientController@ownerVerify')->name('admin.owner_verify');
+            });
+            Route::group(['prefix'=>'broker'],function(){
+                Route::get('list','ClientController@brokerList')->name('admin.broker_list');
+                Route::get('add/form','ClientController@brokerAddForm')->name('admin.broker_add_form');
+                Route::post('add','ClientController@addBroker')->name('admin.add_broker');
+                Route::get('edit/form/{id}','ClientController@editBrokerForm')->name('admin.edit_broker_form');
+                Route::post('update/{id}','ClientController@updateBroker')->name('admin.update_broker');
+                Route::get('list/ajax','ClientController@brokerListAjax')->name('admin.broker_list_ajax');
             });
             Route::group(['prefix'=>'driver'],function(){
                 Route::get('list','ClientController@driverList')->name('admin.driver_list');
@@ -80,7 +87,7 @@ Route::group(['namespace' => 'Admin'],function(){
                 Route::get('status/{id}/{status}','ClientController@driverStatus')->name('admin.driver_status');
                 Route::get('verify/{driver_mobile}/{owner_mobile}','ClientController@driverVerify')->name('admin.owner_verify');
 
-                Route::get('detail/{id}','ClientController@clientDetail')->name('admin.driver_detail');
+                Route::get('detail/{id}','ClientController@driverDetail')->name('admin.driver_detail');
             });
             Route::group(['prefix'=>'truck'],function(){
                 Route::get('list','TruckController@trucksList')->name('admin.trucks_list');
@@ -98,15 +105,40 @@ Route::group(['namespace' => 'Admin'],function(){
 
                 Route::get('detail/{id}','TruckController@truckDetail')->name('admin.truck_detail');
 
+                Route::group(['prefix'=>'services'],function(){
+                    Route::get('list/{id}','TruckController@truckServiceArea')->name('admin.truck_services_list');
+                    Route::get('status/update/{service_id}/{status}','TruckController@truckServiceAreaStatusUpdate')->name('admin.truck_services_area_status_update');
+                    Route::get('source/set/{service_id}','TruckController@truckServiceAreaSetSource')->name('admin.truck_services_area_set_source');
+                    Route::get('add/new/form/{truck_id}','TruckController@addNewServiceAreaForm')->name('admin.truck_add_new_service_area_form');
+                    Route::put('add/new/{truck_id}','TruckController@addNewServiceArea')->name('admin.truck_add_new_service_area');
+                });
+
             });
         });
 
         Route::group(['prefix' => 'order'],function(){
             Route::get('new/list','OrderController@newOrders')->name('admin.new_order_list');
             Route::get('approved/list','OrderController@approvedOrders')->name('admin.approved_order_list');
+            Route::get('approved/list/ajax','OrderController@approvedOrderListAjax')->name('admin.approved_order_list_ajax');
+
+            Route::get('rejected/list','OrderController@rejectedOrders')->name('admin.rejected_order_list');
+            Route::get('rejected/list/ajax','OrderController@rejectedOrderListAjax')->name('admin.rejected_order_list_ajax');
+            
             Route::get('update/status/{id}/{status}','OrderController@updateStatus')->name('admin.update_order_status');
+            Route::get('details/{order_id}','OrderController@orderDetails')->name('admin.order_details');
 
             Route::get('bid/{order_id}','BidController@bidList')->name('admin.bid_list');
+            Route::get('bid/status/update/{bid_id}/{status}','BidController@bidStatusUpdate')->name('admin.bid_status_update');
+            Route::get('bid/adv/amount/add/form/{bid_id}','BidController@bidAdvAmountForm');
+            Route::put('bid/adv/amount/insert/{bid_id}','BidController@bidAdvAmountInsert')->name('admin.bidAdvanceAmountinsert');
+
+            Route::get('journey/details/{order_id}','JourneyController@journeyListOfOrder')->name('admin.journey_list_of_order');
+        });
+
+        Route::group(['prefix'=>'journey'],function(){
+            Route::get('status/update/{journey_id}/{status}','JourneyController@statusUpdate')->name('admin.journey_status_update');
+            Route::get('list','JourneyController@journeylist')->name('admin.journey_list');
+            Route::get('list/ajax','JourneyController@journeylistAjax')->name('admin.journey_list_ajax');
         });
 
         // Ajax//

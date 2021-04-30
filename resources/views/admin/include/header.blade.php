@@ -92,9 +92,12 @@
                     <ul class="nav child_menu">
                       <li class="sub_menu"><a href="{{ route('admin.new_order_list') }}">New Orders</a></li>
                       <li class="sub_menu"><a href="{{ route('admin.approved_order_list') }}">Approved Orders</a></li>
-                      {{-- <li class="sub_menu"><a href="{{ route('admin.corporate_customer_list') }}">Corporate Customer List</a></li> --}}
+                      <li class="sub_menu"><a href="{{ route('admin.rejected_order_list') }}">Cancelled Orders</a></li>
                     </ul>
                   </li>
+
+                  <li><a href="{{ route('admin.journey_list')}}"><i class="fa fa-gear" aria-hidden="true"></i> Journey List</a></li>
+
                   <li><a><i class="fa fa-gear" aria-hidden="true"></i> Customer List <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li class="sub_menu"><a href="{{ route('admin.customer_list') }}">Individual Customer  List</a></li>
@@ -106,6 +109,7 @@
                     <ul class="nav child_menu">
                       <li class="sub_menu"><a href="{{ route('admin.owner_list') }}">Owner  List</a></li>
                       <li class="sub_menu"><a href="{{ route('admin.driver_list') }}">Driver List</a></li>
+                      <li class="sub_menu"><a href="{{ route('admin.broker_list') }}">Broker List</a></li>
                     </ul>
                   </li>
 

@@ -56,9 +56,9 @@
                     {data: 'mobile', name: 'mobile' ,searchable: true},
                     {data: 'status', name: 'status', render:function(data, type, row){
                     if (row.status == '1') {
-                        return "<button class='btn btn-info'>Enable</a>"
+                        return "<button class='btn btn-xs btn-info'>Enable</a>"
                     }else{
-                        return "<button class='btn btn-danger'>Disabled</a>"
+                        return "<button class='btn btn-xs btn-danger'>Disabled</a>"
                     }
                     }},
                     {data: 'action', name: 'action', orderable: false, searchable: false},

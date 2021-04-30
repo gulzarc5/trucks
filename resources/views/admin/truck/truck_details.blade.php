@@ -22,23 +22,23 @@
                         {{-- <p>{{$product->p_short_desc}}</p> --}}
                         <div class="row product-view-tag">
                             <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Owner Name : </strong>
-                                    {{isset($truck->owner->name) ? $truck->owner->name : ''}}
+                                   {{ $truck->owner->name ?? null }}
                             </h5>
-                            <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Driver Name : </strong>
+                            {{-- <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Driver Name : </strong>
                                 {{isset($truck->driver->name) ? $truck->driver->name : ''}}
-                            </h5>
+                            </h5> --}}
                             <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Truck Type : </strong>
-                                {{isset($truck->truckType->name) ? $truck->truckType->name : ''}}
+                                {{ $truck->truckType->name ?? null}}
                             </h5>
                             <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Source State : </strong>
-                                {{isset($truck->sourceCity->state->name) ? $truck->sourceCity->state->name : ""}}
+                                {{ $truck->sourceCity->state->name ?? null }}
                             </h5>
 
                             <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Source City : </strong>
-                                {{isset($truck->sourceCity->name) ? $truck->sourceCity->name : ""}}
+                                {{ $truck->sourceCity->name ?? null }}
                             </h5>
                             <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Truck Capacity : </strong>
-                                {{isset($truck->capacity->weight) ? $truck->capacity->weight : ''}} M.T.
+                                {{ $truck->capacity->weight ?? null }} M.T.
                             </h5>
                             <h5 class="col-md-4 col-sm-12 col-xs-12"><strong>Truck Number :</strong>
                                 {{$truck->truck_number}}
@@ -87,42 +87,6 @@
                             </table>
                         </div>
                     @endif
-
-                    @if (isset($client->drivers) && ($client->drivers->count() > 0))
-                        <div class="col-md-12">
-                            <hr>
-                            <h3>Drivers</h3>
-                            <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Mobile</th>
-                                    <th>Truck No.</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($client->drivers as $item)
-                                    <tr>
-                                        <td>{{$item->name}} {{$item->id}}</td>
-                                        <td>{{$item->email}}</td>
-                                        <td>{{$item->mobile}}</td>
-                                        <td>{{isset($item->driverTruck->truck_number) ? $item->driverTruck->truck_number : ""}}</td>
-                                        <td>
-                                            @if($item->status == 1)
-                                                <label class="label label-success">Enabled</label>
-                                            @else
-                                            <label class="label label-danger">Disabled</label>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            </table>
-                        </div>
-                    @endif
-
                 @endif
                 <div class="col-md-12">
                     <button class="btn btn-danger" onclick="window.close();">Close Window</button>

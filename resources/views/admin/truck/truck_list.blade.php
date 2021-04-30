@@ -20,7 +20,6 @@
                               <th>Sl</th>
                               <th>SourceCity</th>
                               <th>Owner</th>
-                              <th>Driver</th>
                               <th>Truck no.</th>
                               <th>Truck capacity</th>
                               <th>Status</th>
@@ -54,14 +53,13 @@
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                 {data: 'source_city', name: 'source_city',searchable: true},
                 {data: 'owner', name: 'owner' ,searchable: true},
-                {data: 'driver', name: 'driver' ,searchable: true},
                 {data: 'truck_number', name: 'truck_number' ,searchable: true},
                 {data: 'capacity', name: 'capacity' ,searchable: true},
                 {data: 'status', name: 'status', render:function(data, type, row){
                     if (row.status == '1') {
-                        return "<button class='btn btn-info'>Enable</a>"
+                        return "<button class='btn btn-xs btn-info'>Enabled</a>"
                     }else{
-                        return "<button class='btn btn-danger'>Disabled</a>"
+                        return "<button class='btn btn-xs btn-danger'>Disabled</a>"
                     }
                 }},
                 {data: 'action', name: 'action', orderable: false, searchable: false},

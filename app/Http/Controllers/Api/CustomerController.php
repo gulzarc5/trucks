@@ -10,7 +10,6 @@ use App\SmsHelper\Sms;
 use Validator;
 use Illuminate\Support\Str;
 use Hash;
-use PHPUnit\Framework\Constraint\IsFalse;
 
 class CustomerController extends Controller
 {
@@ -28,7 +27,7 @@ class CustomerController extends Controller
         $customer->otp =  rand(11111,99999);
         if($customer->save()) {
             $message = "OTP is $customer->otp . Please Do Not Share With Anyone";
-            // Sms::smsSend($customer->mobile,$message);
+            Sms::smsSend($customer->mobile,$message);
             $response = [
                 'status' => true,
                 'message' => 'Otp Sent to Your Mobile Number',
@@ -137,7 +136,7 @@ class CustomerController extends Controller
             return response()->json($response, 200);
         }
 
-        $customer = Customer::where('mobile',$request->input('mobile'))->first();
+        $customer = Customer::where('mobile',$request->input('mobile'))->where('status',1)->first();
         if ($customer) {
             if(Hash::check($request->input('password'), $customer->password)){
                 $customer->api_token = Str::random(60);
@@ -170,9 +169,9 @@ class CustomerController extends Controller
         }
     }
 
-    public function profileFetch($id)
+    public function profileFetch(Request $request)
     {
-        $customer = Customer::find($id);
+        $customer = Customer::find($request->user()->id);
         $response = [
             'status' => true,
             'message' => 'Customer Profile Data',
@@ -181,7 +180,8 @@ class CustomerController extends Controller
         return response()->json($response, 200);
     }
 
-    public function profileUpdate(Request $request,$id){
+    public function profileUpdate(Request $request){
+        $id = $request->user()->id;
         $validator =  Validator::make($request->all(),[
             'name' => ['required', 'string', 'max:255'],
             'mobile' => 'required|numeric|digits:10|unique:customer,mobile,'. $id,
@@ -189,6 +189,7 @@ class CustomerController extends Controller
             'city' => 'required',
             'address' => 'required',
             'pin' => 'required',
+            'gender' => 'required_if:user_type,1|in:M,F',
         ]);
 
         if ($validator->fails()) {
@@ -216,7 +217,6 @@ class CustomerController extends Controller
                 'message' => 'User Data Updated Successfully',
                 'error_code' => false,
                 'error_message' => null,
-                'data' => $customer,
             ];
             return response()->json($response, 200);
         } else {
@@ -230,7 +230,7 @@ class CustomerController extends Controller
         }
     }
 
-    public function changePassword(Request $request,$id)
+    public function changePassword(Request $request)
     {
         $validator =  Validator::make($request->all(),[
             'current_pass' => ['required', 'string', 'min:8'],
@@ -240,14 +240,14 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             $response = [
                 'status' => false,
-                'message' => 'Required Field Can not be Empty',
+                'message' => 'Validation Error',
                 'error_code' => true,
                 'error_message' => $validator->errors(),
             ];
             return response()->json($response, 200);
         }
 
-        $user =Customer::find($id);
+        $user =Customer::find($request->user()->id);
         if ($user) {
             if(Hash::check($request->input('current_pass'), $user->password)){
                 $user->password = Hash::make($request->input('confirm_password'));
@@ -303,7 +303,7 @@ class CustomerController extends Controller
         $customer->otp = rand(11111,99999);
         if ($customer->save()) {
             $message = "OTP is $customer->otp . Please Do Not Share With Anyone";
-            // Sms::smsSend($customer->mobile,$message);
+            Sms::smsSend($customer->mobile,$message);
             $response = [
                 'status' => true,
                 'message' => 'OTP Sent Successfully To Registered Mobile Number',

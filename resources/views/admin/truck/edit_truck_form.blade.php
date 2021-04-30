@@ -24,7 +24,7 @@
                 </div>
     	        <div>
     	            <div class="x_content">
-                        {{ Form::open(['method' => 'post','route'=>'admin.add_truck']) }}
+                        {{ Form::open(['method' => 'post','route'=>['admin.update_truck',['id'=>$truck->id]]]) }}
                         <div class="well" style="overflow: auto">
                             <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
                                 <label for="owner_mobile">Owner Mobile<span><b style="color: red"> * </b></span> <span id="owner_verify_error"></span></label>
@@ -41,23 +41,6 @@
                                 <input type="text" class="form-control"  id="owner_name" value="{{$truck->owner_name}}" disabled/>
                             </div>
 
-                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
-                                <label for="driver_mobile">Driver Mobile
-                                    <span><b style="color: red"> * </b></span>
-                                    <span id="driver_mobile_error"></span>
-                                </label>
-                                <input type="text" class="form-control" name="driver_mobile" placeholder="Enter Driver Mobile" onblur="checkDriver(this.value)" id="driver_mobile"  value="{{$truck->driver_mobile}}"/>
-
-                                @if($errors->has('truck'))
-                                    <span class="invalid-feedback" role="alert" style="color:red">
-                                        <strong>{{ $errors->first('truck') }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
-                                <label for="driver_mobile">Driver Name<span><b style="color: red"> * </b></span></label>
-                                <input type="text" class="form-control"  id="driver_name"  value="{{$truck->driver_name}}" disabled/>
-                            </div>
                         </div>
     	            	<div class="well" style="overflow: auto">
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
@@ -80,9 +63,11 @@
                                 <label for="source_state">Source State</label>
                                 <select class="form-control" name="source_state" onchange="cityFetch(this.value)">
                                     <option value="">Select State</option>
-                                    @foreach($state as $item)
-                                        <option value="{{ $item->id }}"  {{$item->id == $selected_state ? 'selected' : ''}}>{{ $item->name }}</option>
-                                    @endforeach
+                                    @if (isset($state) && !empty($state))
+                                        @foreach($state as $item)
+                                            <option value="{{ $item->id }}"  {{$item->id == $selected_state ? 'selected' : ''}}>{{ $item->name }}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @if($errors->has('source_state'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
@@ -94,10 +79,11 @@
                                 <label for="source_city">Source City<span><b style="color: red"> * </b></span></label>
                                 <select class="form-control" name="source_city" id="city">
                                     <option value="">Please Select Source</option>
-                                    @forelse ($city as $item)
-                                        <option value="{{ $item->id }}" {{$item->id == $truck->source ? 'selected' : ''}}>{{ $item->name }}</option>
-                                    @empty
-                                    @endforelse
+                                    @if (isset($city) && !empty($city))
+                                        @foreach ($city as $item)
+                                            <option value="{{ $item->id }}" {{$item->id == $truck->source ? 'selected' : ''}}>{{ $item->name }}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @if($errors->has('source_city'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
@@ -109,9 +95,11 @@
                                 <label for="capacity">Truck Capacity<span><b style="color: red"> * </b></span></label>
                                 <select class="form-control" name="capacity">
                                     <option value="">Please Select Capacity</option>
-                                    @foreach($weight as $value)
-                                        <option value="{{ $value->id }}" name="weight" {{ $value->id == $truck->weight_id ? 'selected' : '' }}>{{ $value->weight }} MT</option>
-                                    @endforeach
+                                    @if (isset($weight) && !empty($weight))
+                                        @foreach($weight as $value)
+                                            <option value="{{ $value->id }}" name="weight" {{ $value->id == $truck->weight_id ? 'selected' : '' }}>{{ $value->weight }} MT</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @if($errors->has('capacity'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
@@ -189,33 +177,5 @@
                 }
             });
         }
-
-        function checkDriver(mobile){
-            var owner = $('#owner_mobile').val();
-            if (owner) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                });
-                $.ajax({
-                    method: "GET",
-                    url   : "{{ url('admin/client/driver/verify/') }}"+"/"+mobile+"/"+owner,
-                    success: function(data) {
-                        $("#driver_name").val('');
-                        $("#driver_mobile_error").html('');
-                        if ($.isEmptyObject(data.name)) {
-                            $("#driver_mobile_error").html(`<b style="color:red">Sorry No Driver Found</b>`);
-                        } else {
-                            $("#driver_name").val(data.name);
-                        }
-                    }
-                });
-            }else{
-                $("#driver_mobile_error").html('<span style="color:red">Please Select Owner First</span>');
-                $("#driver_mobile").val("");
-            }
-        }
-
     </script>
 @endsection

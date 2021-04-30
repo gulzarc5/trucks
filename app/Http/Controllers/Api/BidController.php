@@ -9,14 +9,15 @@ use App\Models\Bids;
 
 use App\Services\ClientBidCheckService;
 
+use App\Http\Resources\Bid\ClientBidListResource;
+
 class BidController extends Controller
 {
     public function placeBid(Request $request,ClientBidCheckService $service)
     {
         $validator =  Validator::make($request->all(), [
-            'order_id' => 'required',
-            'client_id' => 'required',
-            'amount' => 'required',
+            'order_id' => 'required|numeric',
+            'amount' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -30,7 +31,7 @@ class BidController extends Controller
         }
 
         $order_id = $request->input('order_id');
-        $client_id = $request->input('client_id');
+        $client_id = $request->user()->id;
         $amount = $request->input('amount');
 
         $bid_check = $service->clientBidCheck($order_id,$client_id);
@@ -59,5 +60,15 @@ class BidController extends Controller
         return response()->json($response, 200);
     }
 
+    public function clientBids(Request $request)
+    {
+        $bids  = Bids::where('client_id',$request->user()->id)->orderBy('id', 'desc')->limit(50)->get();
+        $response = [
+            'status' => true,
+            'message' => 'Bid List',
+            'data' => ClientBidListResource::collection($bids),
+        ];
+        return response()->json($response, 200);
+    }
 
 }

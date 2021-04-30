@@ -17,42 +17,22 @@
                         <table id="user" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                <th>Sl</th>
-                                <th>Action</th>
-                                <th>Order By</th>
-                                <th>Truck Type</th>
-                                <th>Source</th>
-                                <th>Destinatin</th>
-                                <th>Weight</th>
-                                <th>No of Trucks</th>
-                                <th>Date</th>
+                                    <th>Sl</th>
+                                    <th>Action</th>
+                                    <th>Total Bids</th>
+                                    <th>Bid Approval Status</th>
+                                    <th>User Type</th>
+                                    <th>Order By</th>
+                                    <th>Truck Type</th>
+                                    <th>Source</th>
+                                    <th>Destinatin</th>
+                                    <th>Weight</th>
+                                    <th>No of Trucks</th>
+                                    <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (isset($approved_orders) && !empty($approved_orders) && (count($approved_orders) > 0 ))
-                                    @php
-                                        $count = 1;
-                                    @endphp
-                                    @foreach ($approved_orders as $item)
-                                    <tr>
-                                        <td>{{ $count++ }}</td>
-                                        <td id="action{{$item->id}}">
-                                            <a href="{{route('admin.bid_list',['order_id'=>$item->id])}}" class="btn btn-sm btn-primary" target="_blank">View Bids</a>
-                                        </td>
-                                        <td>{{ isset($item->customer->name) ? $item->customer->name : ''}}</td>
-                                        <td>{{ isset($item->truckType->name) ? $item->truckType->name : ''}}</td>
-                                        <td>{{ isset($item->sourceCity->name) ? $item->sourceCity->name : ''}}</td>
-                                        <td>{{ isset($item->destinationCity->name) ? $item->destinationCity->name : ''}}</td>
-                                        <td>{{ isset($item->weight->weight) ? $item->weight->weight : ''}}</td>
-                                        <td>{{ $item->no_of_trucks}}</td>
-                                        <td>{{ $item->schedule_date}}</td>
-                                    </tr>
-                                    @endforeach
-                                @else
-                                <tr>
-                                    <td colspan="9" style="text-align: center">No Orders Found</td>
-                                </tr>
-                                @endif
+                                
                             </tbody>
                         </table>
     	            </div>
@@ -68,45 +48,62 @@
  @section('script')
 
  <script type="text/javascript">
-     $(function () {
+    $(function () {
 
-       var table = $('#user').DataTable();
-
-   });
+        var table = $('#user').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('admin.approved_order_list_ajax') }}",
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex',searchable: false,orderable: false},
+                {data: 'action', name: 'action',searchable: false,orderable: false},
+                {data: 'total_bids', name: 'total_bids' ,searchable: false,orderable: false},
+                {data: 'bid_approval_status', name: 'bid_approval_status' ,searchable: false,orderable: false},
+                {data: 'user_type', name: 'user_type' ,searchable: true},
+                {data: 'customer.name', name: 'customer.name' ,searchable: true},
+                {data: 'truck_type.name', name: 'truckType.name' ,searchable: true},
+                {data: 'source_city.name', name: 'sourceCity.name' ,searchable: true},
+                {data: 'destination_city.name', name: 'destinationCity.name' ,searchable: true},
+                {data: 'weight.weight', name: 'weight.weight' ,searchable: true},
+                {data: 'no_of_trucks', name: 'no_of_trucks' ,searchable: true},
+                {data: 'schedule_date', name: 'schedule_date' ,searchable: true},
+            ]
+        });
+    });
  </script>
  <script src="{{asset('admin/dialog_master/simple-modal.js')}}"></script>
-     <script>
-         async function openModal(order_item_id,status,action_id,msg) {
-            this.myModal = new SimpleModal("Attention!", msg);
+<script>
+    async function openModal(order_item_id,status,action_id,msg) {
+    this.myModal = new SimpleModal("Attention!", msg);
 
-            try {
-                const modalResponse = await myModal.question();
-                if (modalResponse) {
-                    $.ajaxSetup({
-						headers: {
-							'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-						}
-					});
-					$.ajax({
-						type:"GET",
-						url:"{{url('admin/order/update/status')}}"+"/"+order_item_id+"/"+status,
-
-						beforeSend: function() {
-					        // setting a timeout
-					        $("#action"+action_id).html('<i class="fa fa-spinner fa-spin"></i>');
-					    },
-						success:function(data){
-                            if (status == '2') {
-                                $("#action"+action_id).html(`<button class="btn btn-sm btn-primary">Approved</button>`);
-                            }else if(status == '4'){
-                                $("#action"+action_id).html('<button class="btn btn-sm btn-danger">Cancelled</button>');
-                            }
-						}
-					});
+    try {
+        const modalResponse = await myModal.question();
+        if (modalResponse) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
-            }catch(err) {
-                console.log(err);
-            }
+            });
+            $.ajax({
+                type:"GET",
+                url:"{{url('admin/order/update/status')}}"+"/"+order_item_id+"/"+status,
+
+                beforeSend: function() {
+                    // setting a timeout
+                    $("#action"+action_id).html('<i class="fa fa-spinner fa-spin"></i>');
+                },
+                success:function(data){
+                    if (status == '2') {
+                        $("#action"+action_id).html(`<button class="btn btn-sm btn-primary">Approved</button>`);
+                    }else if(status == '4'){
+                        $("#action"+action_id).html('<button class="btn btn-sm btn-danger">Cancelled</button>');
+                    }
+                }
+            });
         }
-     </script>
+    }catch(err) {
+        console.log(err);
+    }
+}
+</script>
 @endsection

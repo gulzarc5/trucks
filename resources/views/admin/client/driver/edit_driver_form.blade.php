@@ -59,6 +59,7 @@
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
                                 <label for="state">State</label>
                                 <select class="form-control" onchange="cityFetch(this.value)" name="state" >
+                                    <option value="">Please Select State</option>
                                     @foreach($state as  $value)
                                         @if($value->name == $driver->state)
                                             <option value="{{ $value->id }}" selected name="state">{{ $value->name }}</option>

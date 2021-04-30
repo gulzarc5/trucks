@@ -9,7 +9,6 @@
 
     	        <div class="x_title">
                     <h2>Bid List of order ::</h2>
-
     	            <div class="clearfix"></div>
     	        </div>
     	        <div>
@@ -35,11 +34,12 @@
                                         <td>{{ $count++ }}</td>
                                         <td id="action{{$item->id}}">
                                             @if ($item->status == '1')
-                                                <a href="#" class="btn btn-sm btn-primary">New</a>
+                                                <a href="#" class="btn btn-sm btn-primary"  onclick="openModal({{$item->id}},2,{{$item->id}},'Are You Sure To Approve')">Approve</a>
+                                                <a href="#" class="btn btn-sm btn-danger"  onclick="openModal({{$item->id}},3,{{$item->id}},'Are You Sure To Reject')">Reject</a>
                                             @elseIf($item->status == '2')
-                                                <a href="#" class="btn btn-sm btn-primary">Accepted</a>
-                                            @else
-                                                <a href="#" class="btn btn-sm btn-primary">Rejected</a>
+                                                <a href="#" class="btn btn-sm btn-primary">Approved</a>
+                                            @else 
+                                                <a href="#" class="btn btn-sm btn-danger">Rejected</a>
                                             @endif
                                         </td>
                                         <td>{{ isset($item->client->name) ? $item->client->name : ''}}</td>
@@ -50,7 +50,7 @@
                                             @elseIf($item->status == '2')
                                                 <a href="#" class="btn btn-sm btn-primary">Accepted</a>
                                             @else
-                                                <a href="#" class="btn btn-sm btn-primary">Rejected</a>
+                                                <a href="#" class="btn btn-sm btn-danger">Rejected</a>
                                             @endif
                                         </td>
                                         <td>{{ $item->created_at}}</td>
@@ -84,33 +84,37 @@
  </script>
  <script src="{{asset('admin/dialog_master/simple-modal.js')}}"></script>
      <script>
-         async function openModal(order_item_id,status,action_id,msg) {
+        async function openModal(order_item_id,status,action_id,msg) {
             this.myModal = new SimpleModal("Attention!", msg);
 
             try {
                 const modalResponse = await myModal.question();
                 if (modalResponse) {
-                    $.ajaxSetup({
-						headers: {
-							'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-						}
-					});
-					$.ajax({
-						type:"GET",
-						url:"{{url('admin/order/update/status')}}"+"/"+order_item_id+"/"+status,
-
-						beforeSend: function() {
-					        // setting a timeout
-					        $("#action"+action_id).html('<i class="fa fa-spinner fa-spin"></i>');
-					    },
-						success:function(data){
-                            if (status == '2') {
-                                $("#action"+action_id).html(`<button class="btn btn-sm btn-primary">Approved</button>`);
-                            }else if(status == '4'){
-                                $("#action"+action_id).html('<button class="btn btn-sm btn-danger">Cancelled</button>');
+                    if (status =='2') {
+                        window.location.href = "{{url('admin/order/bid/adv/amount/add/form/')}}"+"/"+order_item_id;
+                    } else {                        
+                        $.ajaxSetup({
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             }
-						}
-					});
+                        });
+                        $.ajax({
+                            type:"GET",
+                            url:"{{url('admin/order/bid/status/update/')}}"+"/"+order_item_id+"/"+status,
+    
+                            beforeSend: function() {
+                                // setting a timeout
+                                $("#action"+action_id).html('<i class="fa fa-spinner fa-spin"></i>');
+                            },
+                            success:function(data){
+                                if (status == '2') {
+                                    $("#action"+action_id).html(`<button class="btn btn-sm btn-primary">Approved</button>`);
+                                }else if(status == '3'){
+                                    $("#action"+action_id).html('<button class="btn btn-sm btn-danger">Rejected</button>');
+                                }
+                            }
+                        });
+                    }
                 }
             }catch(err) {
                 console.log(err);

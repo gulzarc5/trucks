@@ -33,7 +33,7 @@
                                     <tr>
                                       <td>{{ $count++ }}</td>
                                       <td>{{ $item->name }}</td>
-                                      <td>{{ $item->state->name }}</td>
+                                      <td>{{ $item->state->name ?? null }}</td>
                                       @if ($item->status == '1')
                                         <td class="btn btn-sm btn-primary">Enabled</td>
                                       @else

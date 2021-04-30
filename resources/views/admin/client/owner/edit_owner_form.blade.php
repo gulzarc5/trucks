@@ -77,9 +77,12 @@
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
                                 <label for="state">State</label>
                                 <select class="form-control" name="state" onchange="cityFetch(this.value)">
-                                    @foreach($state as  $item)
-                                        <option value="{{ $item->id }}" {{$owner->state == $item->id ? 'selected' : ''}} selected >{{ $item->name }}</option>
-                                    @endforeach
+                                    <option value="">Please Select State</option>
+                                    @if (isset($state) && !empty($state))
+                                        @foreach($state as  $item)
+                                            <option value="{{ $item->id }}" {{$owner->state == $item->id ? 'selected' : ''}} >{{ $item->name }}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @if($errors->has('state'))
                                     <span class="invalid-feedback" role="alert" style="color:red">
@@ -91,9 +94,11 @@
                                 <label for="city">City</label>
                                 <select class="form-control" name="city" id="city">
                                     <option value="">Select City</option>
-                                    @foreach($city as  $item)
-                                        <option value="{{ $item->id }}" {{$owner->city == $item->id ? 'selected' : ''}} selected >{{ $item->name }}</option>
-                                    @endforeach
+                                    @if (isset($city) && !empty($city))
+                                        @foreach($city as  $item)
+                                            <option value="{{ $item->id }}" {{$owner->city == $item->id ? 'selected' : ''}} selected >{{ $item->name }}</option>
+                                        @endforeach
+                                    @endif
                                 </select>
                                 @if($errors->has('city'))
                                     <span class="invalid-feedback" role="alert" style="color:red">

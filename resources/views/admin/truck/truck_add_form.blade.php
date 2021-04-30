@@ -40,24 +40,6 @@
                                 <label for="owner_mobile">Owner Name<span><b style="color: red"> * </b></span></label>
                                 <input type="text" class="form-control"  id="owner_name" disabled/>
                             </div>
-
-                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
-                                <label for="driver_mobile">Driver Mobile
-                                    <span><b style="color: red"> * </b></span>
-                                    <span id="driver_mobile_error"></span>
-                                </label>
-                                <input type="text" class="form-control" name="driver_mobile" placeholder="Enter Driver Mobile" onblur="checkDriver(this.value)" id="driver_mobile"/>
-
-                                @if($errors->has('truck'))
-                                    <span class="invalid-feedback" role="alert" style="color:red">
-                                        <strong>{{ $errors->first('truck') }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                            <div class="col-md-6 col-sm-12 col-xs-12 mb-3">
-                                <label for="driver_mobile">Driver Name<span><b style="color: red"> * </b></span></label>
-                                <input type="text" class="form-control"  id="driver_name" disabled/>
-                            </div>
                         </div>
     	            	<div class="well" style="overflow: auto">
                             <div class="col-md-4 col-sm-12 col-xs-12 mb-3">
@@ -249,32 +231,32 @@
             });
         }
 
-        function checkDriver(mobile){
-            var owner = $('#owner_mobile').val();
-            if (owner) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                });
-                $.ajax({
-                    method: "GET",
-                    url   : "{{ url('admin/client/driver/verify/') }}"+"/"+mobile+"/"+owner,
-                    success: function(data) {
-                        $("#driver_name").val('');
-                        $("#driver_mobile_error").html('');
-                        if ($.isEmptyObject(data.name)) {
-                            $("#driver_mobile_error").html(`<b style="color:red">Sorry No Driver Found</b>`);
-                        } else {
-                            $("#driver_name").val(data.name);
-                        }
-                    }
-                });
-            }else{
-                $("#driver_mobile_error").html('<span style="color:red">Please Select Owner First</span>');
-                $("#driver_mobile").val("");
-            }
-        }
+        // function checkDriver(mobile){
+        //     var owner = $('#owner_mobile').val();
+        //     if (owner) {
+        //         $.ajaxSetup({
+        //             headers: {
+        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //             },
+        //         });
+        //         $.ajax({
+        //             method: "GET",
+        //             url   : "{{ url('admin/client/driver/verify/') }}"+"/"+mobile+"/"+owner,
+        //             success: function(data) {
+        //                 $("#driver_name").val('');
+        //                 $("#driver_mobile_error").html('');
+        //                 if ($.isEmptyObject(data.name)) {
+        //                     $("#driver_mobile_error").html(`<b style="color:red">Sorry No Driver Found</b>`);
+        //                 } else {
+        //                     $("#driver_name").val(data.name);
+        //                 }
+        //             }
+        //         });
+        //     }else{
+        //         $("#driver_mobile_error").html('<span style="color:red">Please Select Owner First</span>');
+        //         $("#driver_mobile").val("");
+        //     }
+        // }
 
         function checkform(){
             var numFiles = $('input[type=file]').get(0).files.length;

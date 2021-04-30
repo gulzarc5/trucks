@@ -17,16 +17,16 @@ use Image;
 class TruckController extends Controller
 {
     public function trucksList(){
-        $trucks_list = Truck::get();
-        return view('admin.truck.truck_list',compact('trucks_list'));
+        return view('admin.truck.truck_list');
     }
 
     public function truckListAjax(Request $request){
-        return datatables()->of(Truck::get())
+        return datatables()->of(Truck::latest()->get())
             ->addIndexColumn()
             ->addColumn('action', function($row){
                 $btn ='<a href="'.  route('admin.truck_detail',['id'=>$row->id]) .'" class="btn btn-info btn-sm" target="_blank">View</a>
                 <a href="'.  route('admin.edit_truck_form',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Edit</a>
+                <a href="'.  route('admin.truck_services_list',['id'=>$row->id]) .'" class="btn btn-info btn-sm" target="_blank">View Service Area</a>
                 <a href="'.  route('admin.truck_images',['id'=>$row->id]) .'" class="btn btn-warning btn-sm" target="_blank">Images</a>';
                 if ($row->status == '1') {
                     $btn .='<a href="'.route('admin.truck_status',['id'=>encrypt($row->id),'status'=>2]).'" class="btn btn-danger btn-sm" >Disable</a>';
@@ -38,8 +38,6 @@ class TruckController extends Controller
                 return !empty($row->weight_id) && !empty($row->capacity) ? $row->capacity->weight." MT" : '';
             })->addColumn('owner', function($row){
                 return !empty($row->owner_id) && !empty($row->owner) ? $row->owner->name : '';
-            })->addColumn('driver', function($row){
-                return !empty($row->driver_id) && !empty($row->driver) ? $row->driver->name : '';
             })->addColumn('source_city', function($row){
                 return !empty($row->source) && !empty($row->sourceCity) ? $row->sourceCity->name : '';
             })
@@ -56,7 +54,6 @@ class TruckController extends Controller
     public function addTruck(Request $request){
         $this->validate($request, [
             'owner_mobile'=>'required|numeric',
-            'driver_mobile'=>'required|numeric',
             'truck_type' => 'required',
             'source_city'=>'required',
             'capacity'=>'required',
@@ -65,7 +62,6 @@ class TruckController extends Controller
             'service_city.*'=>'required',
         ]);
         $owner_mobile = $request->input('owner_mobile');
-        $driver_mobile = $request->input('driver_mobile');
 
         $check_owner = User::where('mobile',$owner_mobile)->where('user_type',1);
         if ($check_owner->count() == 0) {
@@ -73,24 +69,11 @@ class TruckController extends Controller
         }
         $owner_data = $check_owner->first();
         $owner_id = $owner_data->id;
-        $check_driver = User::where('status',1)
-        ->where(function($q) use ($owner_mobile){
-            $q->where('mobile',$owner_mobile)->where('user_type',1);
-        })
-        ->orWhere(function($q) use ($owner_id,$driver_mobile){
-            $q->where('id',$owner_id)->where('mobile',$driver_mobile)->where('user_type',1);
-        });
-        if ($check_driver->count() == 0) {
-            return redirect()->back()->with('error','Driver Not Found');
-        }
-
-        $driver_data = $check_driver->first();
-
+       
         $truck = new Truck();
         $truck->truck_type = $request->input('truck_type');
         $truck->weight_id = $request->input('capacity');
         $truck->owner_id =$owner_data->id;
-        $truck->driver_id = $driver_data->id;
         $truck->source = $request->input('source_city');
         $truck->truck_number = $request->input('truck_number');
         if($truck->save()){
@@ -186,31 +169,24 @@ class TruckController extends Controller
     public function updateTruck(Request $request,$id){
         $this->validate($request, [
             'owner_mobile'=>'required|numeric',
-            'driver_mobile'=>'required|numeric',
             'truck_type' => 'required',
             'source_city'=>'required',
             'capacity'=>'required',
             'truck_number'=>'required',
         ]);
         $owner_mobile = $request->input('owner_mobile');
-        $driver_mobile = $request->input('driver_mobile');
 
         $check_owner = User::where('mobile',$owner_mobile)->where('user_type',1);
         if ($check_owner->count() == 0) {
             return redirect()->back()->with('error','Owner Not Found');
         }
-        $check_driver = User::where('mobile',$driver_mobile)->where('user_type',2);
-        if ($check_driver->count() == 0) {
-            return redirect()->back()->with('error','Driver Not Found');
-        }
+      
         $owner_data = $check_owner->first();
-        $driver_data = $check_driver->first();
 
         $truck = Truck::findOrFail($id);
         $truck->truck_type = $request->input('truck_type');
         $truck->weight_id = $request->input('capacity');
         $truck->owner_id =$owner_data->id;
-        $truck->driver_id = $driver_data->id;
         $truck->source = $request->input('source_city');
         $truck->truck_number = $request->input('truck_number');
         if($truck->save()){
@@ -292,5 +268,63 @@ class TruckController extends Controller
     {
         $truck = Truck::findOrFail($truck_id);
         return view('admin.truck.truck_details',compact('truck'));
+    }
+
+    public function truckServiceArea($truck_id)
+    {
+        $service_area = TruckServiceArea::where('truck_id',$truck_id)->get();
+        return view('admin.truck.truck_services_list',compact('service_area','truck_id'));
+    }
+
+    public function truckServiceAreaStatusUpdate($service_id,$status)
+    {
+        $service_area = TruckServiceArea::findOrFail($service_id);
+        $service_area->status = $status;
+        $service_area->save();
+        return redirect()->back();
+    }
+
+    public function truckServiceAreaSetSource($service_area_id)
+    {
+        //update Is source is No
+        
+        $service_area = TruckServiceArea::findOrFail($service_area_id);
+        
+        TruckServiceArea::where('truck_id',$service_area->truck_id)->update([
+            'is_source' => 1,
+        ]);
+
+        $service_area->is_source = 2;
+        $service_area->save();
+
+        //update truck source
+        $truck = Truck::findOrFail($service_area->truck_id);
+        $truck->source =$service_area->service_area;
+        $truck->save();
+        return redirect()->back();
+    }
+
+    public function addNewServiceAreaForm($truck_id)
+    {
+        $state = State::where('status',1)->get();
+        return view('admin.truck.add_new_service_area',compact('truck_id','state'));
+    }
+    public function addNewServiceArea(Request $request, $truck_id)
+    {
+        $this->validate($request, [
+            'service_city.*'=>'required',
+        ]);
+
+        $service_city = $request->input('service_city');
+        foreach ($service_city as $key => $city) {
+            $check = TruckServiceArea::where('truck_id',$truck_id)->where('service_area',$city)->count();
+            if ($check == 0){
+                $service_area = new TruckServiceArea();
+                $service_area->truck_id = $truck_id;
+                $service_area->service_area = $city;
+                $service_area->save();
+            }
+        }
+        return redirect()->route('admin.truck_services_list',['id' => $truck_id]);
     }
 }

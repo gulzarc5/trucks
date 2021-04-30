@@ -15,7 +15,7 @@ class CreateJourneyTable extends Migration
     {
         Schema::create('journey', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('truck_id');
+            $table->string('truck_id')->nullable();
             $table->string('order_id');
             $table->char('status')->comment('1=Pending, 2=On The Way, 3=Completed');
             $table->timestamps();
